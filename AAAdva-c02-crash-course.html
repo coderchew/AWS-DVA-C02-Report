@@ -1,0 +1,1583 @@
+<title>DVA-C02 Weak-Spot Crash Course</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a study sheet. Sticky topic index on the left (desktop), one reading column,
+   wide tables scroll inside their own frame. Highlighter marks = exam trigger phrases;
+   answer bubbles = your pick (red) vs the keyed answer (green). */
+:root {
+  --paper: #f2f4f7;
+  --sheet: #ffffff;
+  --sheet-2: #f6f8fb;
+  --ink: #142030;
+  --ink-2: #4e5b6b;
+  --muted: #5d6979;
+  --rule: #dce2e9;
+  --rule-2: #c6cfda;
+  --accent: #2f55d4;
+  --accent-soft: #e7ecfc;
+  --good: #17734a;
+  --good-soft: #e2f2e9;
+  --bad: #b8322a;
+  --bad-soft: #fbe8e6;
+  --warn: #8a5a00;
+  --warn-soft: #fff1cf;
+  --hl: rgba(255, 210, 0, .42);
+  --viz-a: #9db0f2;
+  --viz-b: #2f55d4;
+  --bar: #2f55d4;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f141a; --sheet: #161d25; --sheet-2: #1b2430; --ink: #e6ebf1; --ink-2: #a9b4c2;
+    --muted: #8995a5; --rule: #263241; --rule-2: #344459; --accent: #8ea6ff; --accent-soft: #1d2848;
+    --good: #4cc58b; --good-soft: #12301f; --bad: #ff8a80; --bad-soft: #3a1b19; --warn: #f0b84a;
+    --warn-soft: #33270c; --hl: rgba(240, 184, 74, .26); --viz-a: #4b63c4; --viz-b: #a9bbff; --bar: #6a86f2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f141a; --sheet: #161d25; --sheet-2: #1b2430; --ink: #e6ebf1; --ink-2: #a9b4c2;
+  --muted: #8995a5; --rule: #263241; --rule-2: #344459; --accent: #8ea6ff; --accent-soft: #1d2848;
+  --good: #4cc58b; --good-soft: #12301f; --bad: #ff8a80; --bad-soft: #3a1b19; --warn: #f0b84a;
+  --warn-soft: #33270c; --hl: rgba(240, 184, 74, .26); --viz-a: #4b63c4; --viz-b: #a9bbff; --bar: #6a86f2;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.58;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px;
+}
+p { margin: 0; }
+ul, ol { margin: 0; }
+h1, h2, h3, h4 { font-family: var(--f-display); color: var(--ink); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2.1rem, 1.4rem + 2.6vw, 3rem); font-weight: 800; line-height: 1.04; letter-spacing: -.02em; }
+h2 { font-size: clamp(1.5rem, 1.2rem + 1vw, 1.9rem); font-weight: 750; line-height: 1.15; letter-spacing: -.01em; }
+h3 { font-size: 1.125rem; font-weight: 700; line-height: 1.3; }
+h4 { font-size: 1rem; font-weight: 700; }
+code, .mono { font-family: var(--f-mono); }
+code {
+  font-size: .86em; background: var(--sheet-2); border: 1px solid var(--rule);
+  border-radius: 4px; padding: 0 .3em; overflow-wrap: anywhere;
+}
+.nw { white-space: nowrap; }
+mark {
+  color: inherit; padding: 0 .12em; border-radius: 2px;
+  background: linear-gradient(transparent 14%, var(--hl) 14%, var(--hl) 90%, transparent 90%);
+}
+strong { font-weight: 700; }
+
+.page {
+  max-width: 1240px; margin: 0 auto;
+  padding-block: 28px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+@media (min-width: 1080px) { .layout { grid-template-columns: 220px minmax(0, 1fr); gap: 48px; } }
+main { min-width: 0; display: flex; flex-direction: column; gap: 72px; }
+.measure { max-width: 70ch; }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.eyebrow {
+  font-family: var(--f-mono); font-size: .74rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted);
+}
+.lead { font-size: 1.125rem; color: var(--ink-2); }
+.small { font-size: .88rem; color: var(--ink-2); }
+.ids { font-family: var(--f-mono); font-size: .74rem; color: var(--muted); white-space: normal; }
+.sec-head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; }
+.sec-head p { color: var(--ink-2); max-width: 70ch; }
+
+/* ---------- table of contents ---------- */
+nav.toc { display: none; }
+@media (min-width: 1080px) {
+  nav.toc {
+    display: block; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px);
+    align-self: start; max-height: calc(100vh - 40px); overflow: auto; padding-bottom: 20px;
+  }
+}
+nav.toc ol { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+nav.toc a {
+  display: block; padding: 5px 10px; border-radius: 6px; text-decoration: none;
+  color: var(--ink-2); font-size: .9rem; line-height: 1.3;
+}
+nav.toc a:hover { background: var(--sheet); color: var(--ink); }
+nav.toc a[aria-current="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+nav.toc .toc-group { margin-top: 12px; padding: 0 10px 4px; }
+nav.toc .toc-sub a { padding-left: 18px; font-size: .86rem; }
+.toc-mobile { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+@media (min-width: 1080px) { .toc-mobile { display: none; } }
+.toc-mobile a {
+  flex: none; font-size: .82rem; text-decoration: none; color: var(--ink-2);
+  border: 1px solid var(--rule-2); border-radius: 999px; padding: 4px 12px; background: var(--sheet);
+}
+
+/* ---------- header ---------- */
+.masthead { display: flex; flex-direction: column; gap: 18px; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px 18px; font-family: var(--f-mono); font-size: .78rem; color: var(--muted); }
+.ticket {
+  display: grid; grid-template-columns: minmax(0, 1fr); background: var(--sheet);
+  border: 1px solid var(--rule-2); border-radius: 12px; overflow: hidden;
+}
+@media (min-width: 640px) { .ticket { grid-template-columns: 190px minmax(0, 1fr); } }
+.ticket-stub {
+  padding: 18px 20px; background: var(--warn-soft); display: flex; flex-direction: column; gap: 4px;
+  border-bottom: 2px dashed var(--rule-2);
+}
+@media (min-width: 640px) { .ticket-stub { border-bottom: none; border-right: 2px dashed var(--rule-2); } }
+.ticket-stub .eyebrow { color: var(--warn); }
+.ticket-date { font-family: var(--f-display); font-weight: 800; font-size: 1.7rem; line-height: 1.05; color: var(--ink); }
+.ticket-left { font-family: var(--f-mono); font-size: .82rem; color: var(--warn); font-weight: 600; }
+.ticket-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ticket-body h2 { font-size: 1.2rem; }
+.howto { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); counter-reset: step; }
+@media (min-width: 760px) { .howto { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.howto li {
+  list-style: none; background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px;
+  padding: 12px 14px; font-size: .92rem; color: var(--ink-2); counter-increment: step;
+  display: flex; gap: 10px;
+}
+.howto li::before {
+  content: counter(step); font-family: var(--f-mono); font-weight: 600; color: var(--accent);
+  flex: none;
+}
+.howto { padding: 0; }
+
+/* ---------- generic objects ---------- */
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 20px; }
+.tbl-wrap { overflow-x: auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th {
+  text-align: left; font-family: var(--f-mono); font-weight: 600; font-size: .7rem; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); background: var(--sheet-2); padding: 10px 12px;
+  border-bottom: 1px solid var(--rule); white-space: nowrap;
+}
+td { padding: 10px 12px; border-top: 1px solid var(--rule); vertical-align: top; }
+tr:first-child td { border-top: none; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chip {
+  display: inline-block; font-family: var(--f-mono); font-size: .7rem; line-height: 1.5;
+  padding: 1px 8px; border-radius: 999px; border: 1px solid var(--rule-2); color: var(--ink-2);
+  white-space: nowrap; vertical-align: middle;
+}
+.chip.bad { color: var(--bad); background: var(--bad-soft); border-color: transparent; }
+.chip.good { color: var(--good); background: var(--good-soft); border-color: transparent; }
+.chip.warn { color: var(--warn); background: var(--warn-soft); border-color: transparent; }
+.pick { display: inline; }
+.pick::before {
+  content: ""; display: inline-block; width: .62em; height: .62em; border-radius: 50%;
+  margin-right: .35em; vertical-align: .02em;
+}
+.pick.bad::before { background: var(--bad); }
+.pick.good::before { background: var(--good); }
+.pick.bad .lbl { color: var(--bad); font-weight: 700; }
+.pick.good .lbl { color: var(--good); font-weight: 700; }
+
+/* ---------- standing: dumbbell ---------- */
+.standing-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (min-width: 900px) { .standing-grid { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); } }
+.viz { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.viz-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: baseline; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .82rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.key-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.key-dot.a { background: var(--viz-a); }
+.key-dot.b { background: var(--viz-b); }
+.key-ref { width: 2px; height: 14px; background: var(--ink-2); display: inline-block; }
+.db { --lab: 8.6rem; --val: 6.2rem; position: relative; display: grid; grid-template-columns: var(--lab) minmax(0, 1fr) var(--val); column-gap: 12px; }
+@media (max-width: 520px) { .db { --lab: 5.4rem; --val: 4.9rem; column-gap: 8px; } }
+.db-grid { position: absolute; top: 0; bottom: 26px; left: calc(var(--lab) + 12px); right: calc(var(--val) + 12px); pointer-events: none; }
+@media (max-width: 520px) { .db-grid { left: calc(var(--lab) + 8px); right: calc(var(--val) + 8px); } }
+.db-grid i { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--rule); }
+.db-grid i.ref { width: 2px; margin-left: -1px; background: var(--ink-2); opacity: .55; }
+.db-label, .db-val { font-size: .86rem; display: flex; align-items: center; min-height: 36px; }
+.db-label { color: var(--ink); }
+.db-val { justify-content: flex-end; font-family: var(--f-mono); font-size: .8rem; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.db-track { position: relative; min-height: 36px; }
+.db-line { position: absolute; top: 50%; height: 2px; margin-top: -1px; background: var(--viz-a); }
+.db-dot {
+  position: absolute; top: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; padding: 0;
+  border: none; background: transparent; cursor: default; display: grid; place-items: center;
+}
+.db-dot::after { content: ""; width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 0 2px var(--sheet); }
+.db-dot.a::after { background: var(--viz-a); }
+.db-dot.b::after { background: var(--viz-b); }
+.db-dot:hover::after, .db-dot:focus-visible::after { box-shadow: 0 0 0 2px var(--sheet), 0 0 0 4px var(--ink-2); }
+.db-axis { position: relative; height: 26px; grid-column: 2; }
+.db-axis span {
+  position: absolute; top: 6px; transform: translateX(-50%); font-family: var(--f-mono);
+  font-size: .7rem; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.db-axis span.ref-l { top: 6px; color: var(--ink-2); font-weight: 600; }
+.tooltip {
+  position: fixed; z-index: 30; pointer-events: none; background: var(--ink); color: var(--paper);
+  font-size: .8rem; line-height: 1.35; padding: 6px 9px; border-radius: 6px; max-width: 240px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
+}
+.tooltip strong { display: block; font-size: .95rem; }
+.facts { display: flex; flex-direction: column; gap: 12px; }
+.fact { display: flex; flex-direction: column; gap: 2px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.fact:last-child { border-bottom: none; padding-bottom: 0; }
+.fact b { font-size: 1.5rem; font-family: var(--f-body); line-height: 1.1; }
+.fact span { font-size: .9rem; color: var(--ink-2); }
+
+/* ---------- patterns ---------- */
+.patterns { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 760px) { .patterns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pattern { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.pattern .big { font-family: var(--f-body); font-weight: 700; font-size: 1.6rem; line-height: 1; color: var(--accent); }
+.pattern p { font-size: .94rem; color: var(--ink-2); }
+.pattern .fix { color: var(--ink); font-size: .92rem; }
+.pattern .fix b { color: var(--good); }
+
+/* ---------- fix-first ---------- */
+.ff { list-style: none; padding: 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+.ff li {
+  display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; gap: 4px 12px; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--rule);
+}
+.ff li:first-child { border-top: none; }
+@media (min-width: 760px) {
+  .ff li { grid-template-columns: 2rem minmax(0, 1.15fr) minmax(0, 1fr) 15.5rem; }
+}
+.ff .rank { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ff .name { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ff .name a { font-weight: 700; color: var(--ink); text-decoration: none; }
+.ff .name a:hover { color: var(--accent); text-decoration: underline; }
+.ff .sub { font-size: .8rem; color: var(--muted); }
+.ff .barcell { grid-column: 2 / -1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+@media (min-width: 760px) { .ff .barcell { grid-column: auto; } }
+.ff .bar { flex: 1 1 auto; height: 10px; min-width: 0; position: relative; }
+.ff .bar span { position: absolute; left: 0; top: 0; bottom: 0; background: var(--bar); border-radius: 0 4px 4px 0; }
+.ff li.low .bar span { background: var(--rule-2); }
+.ff .n { font-family: var(--f-mono); font-size: .82rem; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; flex: 0 0 9.6rem; }
+.ff .n small { color: var(--muted); font-size: .72rem; }
+.ff .tags { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; grid-row: 1; grid-column: 3; }
+@media (min-width: 760px) { .ff .tags { grid-column: 4; } }
+.ff label { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.ff input { width: 16px; height: 16px; accent-color: var(--good); }
+.ff li.done .name a { text-decoration: line-through; color: var(--muted); }
+.progress { font-family: var(--f-mono); font-size: .8rem; color: var(--ink-2); }
+
+/* ---------- confused pairs ---------- */
+.pairs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 860px) { .pairs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pair { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.pair-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.pair-head h3 { font-size: 1.02rem; }
+.vs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+@media (min-width: 520px) { .vs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.vs.three { grid-template-columns: minmax(0, 1fr); }
+.vs > div { background: var(--sheet-2); border-radius: 8px; padding: 10px 12px; font-size: .88rem; color: var(--ink-2); min-width: 0; }
+.vs > div b { display: block; color: var(--ink); font-size: .9rem; margin-bottom: 2px; }
+.pair .tell { font-size: .86rem; color: var(--ink-2); }
+
+/* ---------- topic modules ---------- */
+.module { display: flex; flex-direction: column; gap: 22px; scroll-margin-top: 16px; }
+section { scroll-margin-top: 16px; }
+.mod-head { display: flex; flex-direction: column; gap: 6px; padding-top: 18px; border-top: 2px solid var(--ink); }
+.mod-head p { color: var(--ink-2); max-width: 70ch; }
+.mod-block { display: flex; flex-direction: column; gap: 12px; }
+.mod-block > h3 { font-size: 1rem; font-family: var(--f-mono); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+ul.rules { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 14px; max-width: 76ch; }
+ul.rules > li { position: relative; padding-left: 18px; color: var(--ink-2); }
+ul.rules > li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; background: var(--accent); border-radius: 1px; }
+ul.rules > li > strong:first-child { color: var(--ink); }
+.trap { color: var(--bad); }
+.trap::before { content: "Your trap: "; font-weight: 700; }
+ul.triggers { list-style: none; padding: 0; display: flex; flex-direction: column; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; }
+ul.triggers li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px 14px; padding: 10px 14px; border-top: 1px solid var(--rule); font-size: .92rem; }
+ul.triggers li:first-child { border-top: none; }
+@media (min-width: 700px) { ul.triggers li { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+ul.triggers .cue { color: var(--ink-2); }
+ul.triggers .ans { color: var(--ink); font-weight: 700; }
+ul.triggers .ans::before { content: "→ "; color: var(--accent); font-weight: 700; }
+.steps { padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; color: var(--ink-2); max-width: 74ch; }
+.steps li::marker { font-family: var(--f-mono); color: var(--accent); }
+
+/* ---------- calculator ---------- */
+.calc { display: flex; flex-direction: column; gap: 14px; }
+.calc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+@media (min-width: 760px) { .calc-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.field input, .field select {
+  width: 100%; font: inherit; font-size: .95rem; color: var(--ink); background: var(--sheet-2);
+  border: 1px solid var(--rule-2); border-radius: 8px; padding: 7px 9px; min-width: 0;
+}
+.presets { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.btn {
+  font: inherit; font-size: .82rem; color: var(--ink); background: var(--sheet-2); cursor: pointer;
+  border: 1px solid var(--rule-2); border-radius: 999px; padding: 4px 12px;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.calc-out { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (min-width: 760px) { .calc-out { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.calc-res { background: var(--sheet-2); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.calc-res .res { font-family: var(--f-body); font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
+.calc-res .how { font-family: var(--f-mono); font-size: .76rem; color: var(--ink-2); }
+
+/* ---------- drill ---------- */
+.drill-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (min-width: 700px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1180px) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.flash {
+  font: inherit; text-align: left; color: var(--ink); background: var(--sheet); cursor: pointer;
+  border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;
+  min-height: 112px;
+}
+.flash:hover { border-color: var(--rule-2); }
+.flash .q { font-weight: 700; font-size: .95rem; }
+.flash .a { display: none; color: var(--good); font-size: .92rem; border-top: 1px dashed var(--rule-2); padding-top: 8px; }
+.flash[aria-expanded="true"] .a { display: block; }
+.flash .hint { font-family: var(--f-mono); font-size: .7rem; color: var(--muted); margin-top: auto; }
+.flash[aria-expanded="true"] .hint { display: none; }
+
+/* ---------- caveats & sources ---------- */
+.caveats td:first-child { min-width: 11rem; }
+.caveats td { font-size: .9rem; color: var(--ink-2); }
+.caveats td b { color: var(--ink); }
+.sources { columns: 1; padding-left: 1.1em; font-size: .9rem; color: var(--ink-2); }
+@media (min-width: 900px) { .sources { columns: 2; column-gap: 32px; } }
+.sources li { break-inside: avoid; margin-bottom: 6px; }
+details.method { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 18px; }
+details.method summary { cursor: pointer; font-weight: 700; }
+details.method[open] summary { margin-bottom: 10px; }
+.foot { font-size: .82rem; color: var(--muted); }
+</style>
+
+<div class="page">
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <ol>
+    <li><a href="#standing">Where you stand</a></li>
+    <li><a href="#patterns">How you lose points</a></li>
+    <li><a href="#fix-first">Fix-first list</a></li>
+    <li><a href="#pairs">Confused pairs</a></li>
+    <li class="toc-group eyebrow">Topics</li>
+    <li class="toc-sub"><a href="#m-dynamodb">DynamoDB</a></li>
+    <li class="toc-sub"><a href="#m-deploy">Deployment policies</a></li>
+    <li class="toc-sub"><a href="#m-lambda">Lambda</a></li>
+    <li class="toc-sub"><a href="#m-iam">IAM, STS &amp; credentials</a></li>
+    <li class="toc-sub"><a href="#m-encryption">KMS &amp; S3 encryption</a></li>
+    <li class="toc-sub"><a href="#m-cognito">Cognito</a></li>
+    <li class="toc-sub"><a href="#m-apigw">API Gateway &amp; AppSync</a></li>
+    <li class="toc-sub"><a href="#m-messaging">SQS, SNS &amp; Kinesis</a></li>
+    <li class="toc-sub"><a href="#m-caching">Caching, sessions &amp; RDS</a></li>
+    <li class="toc-sub"><a href="#m-network">Load balancing &amp; networking</a></li>
+    <li class="toc-sub"><a href="#m-cloudfront">CloudFront &amp; edge</a></li>
+    <li class="toc-sub"><a href="#m-observability">X-Ray &amp; CloudWatch</a></li>
+    <li class="toc-sub"><a href="#m-cicd">CI/CD &amp; infrastructure as code</a></li>
+    <li class="toc-sub"><a href="#m-other">Smaller topics</a></li>
+    <li class="toc-group eyebrow">Reference</li>
+    <li><a href="#numbers">Numbers to know</a></li>
+    <li><a href="#repeats">Repeat misses</a></li>
+    <li><a href="#caveats">Answer-key caveats</a></li>
+    <li><a href="#drill">Flashcard drill</a></li>
+    <li><a href="#sources">Sources &amp; method</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<header class="masthead">
+  <p class="eyebrow">AWS Certified Developer – Associate · <span class="nw">DVA-C02</span></p>
+  <h1>Weak-Spot Crash Course</h1>
+  <p class="lead measure">Built from your eight practice-test exports (12 attempts). All 310 wrong answers, plus the 19 you got right but flagged unsure, were read, tagged to a topic, and checked against current AWS documentation on 1 November 2026. The page runs from diagnosis to fixes to drill.</p>
+  <div class="meta-row">
+    <span>Exams 01–04 · Practice Tests 1–4</span><span>329 questions analysed</span><span>29 topic tags</span><span>IDs: E2a1-Q47 = Exam 02, attempt 1, question 47 · P = Practice Test</span>
+  </div>
+
+  <aside class="ticket" aria-label="Exam retirement notice">
+    <div class="ticket-stub">
+      <span class="eyebrow">Last day for <span class="nw">DVA-C02</span></span>
+      <span class="ticket-date">30 Nov 2026</span>
+      <span class="ticket-left" id="days-left">29 days left (as of 1 Nov)</span>
+    </div>
+    <div class="ticket-body">
+      <h2>Book your <span class="nw">DVA-C02</span> slot this month</h2>
+      <p class="small">AWS retires DVA-C02 after 30 November 2026. From 1 December you would sit <strong>DVA-C03</strong>: same four-domain structure, but reweighted to 30 / 26 / 22 / 22, the deployment domain renamed <em>Testing and Deployment</em>, and new content on AI security, containers (ECR, ECS, EKS, Fargate) and services such as Amazon Bedrock and Amazon Q. Everything below targets DVA-C02. If you can't book before the cut-off, most of it still applies, but add the DVA-C03 topics. <a href="https://aws.amazon.com/blogs/training-and-certification/september-2026-new-offerings/" target="_blank" rel="noopener">AWS announcement</a></p>
+    </div>
+  </aside>
+
+  <ol class="howto">
+    <li><span><strong>Book the exam</strong> before 30 Nov, then work the Fix-first list top to bottom. Tick each topic once you can explain every rule in it out loud.</span></li>
+    <li><span><strong>Before any retake,</strong> read the Repeat misses table. 28 times you chose the same wrong option twice, so a retake without the rule in hand just repeats the miss.</span></li>
+    <li><span><strong>Run the drill daily</strong> (30 cards built from your misses). Retake a bank only when you can answer every card without flipping it.</span></li>
+  </ol>
+</header>
+
+<nav class="toc-mobile" aria-label="Jump to section">
+  <a href="#standing">Standing</a><a href="#patterns">Patterns</a><a href="#fix-first">Fix first</a><a href="#pairs">Pairs</a>
+  <a href="#m-dynamodb">DynamoDB</a><a href="#m-deploy">Deploy</a><a href="#m-lambda">Lambda</a><a href="#m-iam">IAM</a>
+  <a href="#m-encryption">KMS/S3</a><a href="#m-cognito">Cognito</a><a href="#m-apigw">API GW</a><a href="#m-messaging">SQS/SNS/Kinesis</a>
+  <a href="#m-caching">Caching/RDS</a><a href="#m-network">Network</a><a href="#m-cloudfront">CloudFront</a><a href="#m-observability">X-Ray/CW</a>
+  <a href="#m-cicd">CI/CD</a><a href="#m-other">Other</a><a href="#numbers">Numbers</a><a href="#repeats">Repeats</a><a href="#caveats">Caveats</a><a href="#drill">Drill</a>
+</nav>
+
+<!-- ================= STANDING ================= -->
+<section id="standing">
+  <div class="sec-head">
+    <p class="eyebrow">Diagnosis</p>
+    <h2>Where you stand</h2>
+    <p>First attempts average 53%. Retakes look better (75%), but that gain is partly memory: a third of the questions you missed the first time were missed again.</p>
+  </div>
+  <div class="standing-grid">
+    <figure class="viz card" aria-labelledby="db-title">
+      <div class="viz-head">
+        <h3 id="db-title">Estimated score per test</h3>
+        <div class="legend" aria-hidden="true">
+          <span><i class="key-dot a"></i>First attempt</span>
+          <span><i class="key-dot b"></i>Latest retake</span>
+          <span><i class="key-ref"></i>72% reference</span>
+        </div>
+      </div>
+      <div class="db" role="group" aria-label="Estimated score for each practice test, first attempt and latest retake">
+        <div class="db-grid" aria-hidden="true">
+          <i style="left:0%"></i><i style="left:16.667%"></i><i style="left:33.333%"></i><i style="left:50%"></i><i style="left:66.667%"></i><i style="left:83.333%"></i><i style="left:100%"></i>
+          <i class="ref" style="left:53.333%"></i>
+        </div>
+
+        <span class="db-label">Exam 01</span>
+        <div class="db-track"><span class="db-line" style="left:10.333%;width:43.5%"></span>
+          <button class="db-dot a" style="left:10.333%" data-tip="Exam 01 · attempt 1|46% (35 wrong of 65)" aria-label="Exam 01 attempt 1: 46%"></button>
+          <button class="db-dot b" style="left:53.833%" data-tip="Exam 01 · attempt 3|72% (18 wrong of 65)" aria-label="Exam 01 attempt 3: 72%"></button></div>
+        <span class="db-val">46 → 72%</span>
+
+        <span class="db-label">Exam 02</span>
+        <div class="db-track"><span class="db-line" style="left:10.333%;width:41%"></span>
+          <button class="db-dot a" style="left:10.333%" data-tip="Exam 02 · attempt 1|46% (35 wrong of 65)" aria-label="Exam 02 attempt 1: 46%"></button>
+          <button class="db-dot b" style="left:51.333%" data-tip="Exam 02 · attempt 2|71% (19 wrong of 65)" aria-label="Exam 02 attempt 2: 71%"></button></div>
+        <span class="db-val">46 → 71%</span>
+
+        <span class="db-label">Exam 03</span>
+        <div class="db-track"><button class="db-dot a" style="left:7.667%" data-tip="Exam 03 · attempt 1|45% (36 wrong of 65)" aria-label="Exam 03 attempt 1: 45%"></button></div>
+        <span class="db-val">45%</span>
+
+        <span class="db-label">Exam 04</span>
+        <div class="db-track"><button class="db-dot a" style="left:35.833%" data-tip="Exam 04 · attempt 1|62% (25 wrong of 65)" aria-label="Exam 04 attempt 1: 62%"></button></div>
+        <span class="db-val">62%</span>
+
+        <span class="db-label">Practice 1</span>
+        <div class="db-track"><span class="db-line" style="left:25.667%;width:18%"></span>
+          <button class="db-dot a" style="left:25.667%" data-tip="Practice Test 1 · attempt 1|55% (29 wrong of 65)" aria-label="Practice Test 1 attempt 1: 55%"></button>
+          <button class="db-dot b" style="left:43.667%" data-tip="Practice Test 1 · attempt 2|66% (22 wrong of 65)" aria-label="Practice Test 1 attempt 2: 66%"></button></div>
+        <span class="db-val">55 → 66%</span>
+
+        <span class="db-label">Practice 2</span>
+        <div class="db-track"><button class="db-dot a" style="left:25.667%" data-tip="Practice Test 2 · attempt 1|55% (29 wrong of 65)" aria-label="Practice Test 2 attempt 1: 55%"></button></div>
+        <span class="db-val">55%</span>
+
+        <span class="db-label">Practice 3</span>
+        <div class="db-track"><button class="db-dot a" style="left:33.333%" data-tip="Practice Test 3 · attempt 1|60% (26 wrong of 65)" aria-label="Practice Test 3 attempt 1: 60%"></button></div>
+        <span class="db-val">60%</span>
+
+        <span class="db-label">Practice 4</span>
+        <div class="db-track"><span class="db-line" style="left:25.667%;width:56.333%"></span>
+          <button class="db-dot a" style="left:25.667%" data-tip="Practice Test 4 · attempt 1|55% (29 wrong of 65)" aria-label="Practice Test 4 attempt 1: 55%"></button>
+          <button class="db-dot b" style="left:82%" data-tip="Practice Test 4 · attempt 2|89% (7 wrong of 65)" aria-label="Practice Test 4 attempt 2: 89%"></button></div>
+        <span class="db-val">55 → 89%</span>
+
+        <span></span>
+        <div class="db-axis" aria-hidden="true">
+          <span style="left:0%">40</span><span style="left:16.667%">50</span><span style="left:33.333%">60</span><span style="left:50%">70</span><span style="left:66.667%">80</span><span style="left:83.333%">90</span><span style="left:100%">100%</span>
+        </div>
+        <span></span>
+      </div>
+      <p class="small">Estimated as (65 − wrong answers) ÷ 65 from each export. The real exam reports a scaled score (pass = 720 of 1,000) on 50 scored questions, and AWS publishes no percentage conversion, so read the 72% line as a rough practice target.</p>
+    </figure>
+
+    <div class="card facts">
+      <div class="fact"><b>53%</b><span>average first-attempt score across all 8 tests (range 45–62%)</span></div>
+      <div class="fact"><b>43 of 128</b><span>first-attempt misses on retaken tests were wrong again; 28 with the identical wrong option</span></div>
+      <div class="fact"><b>19 + 21</b><span>of 40 questions you flagged “unsure” were right (19) or wrong (21)</span></div>
+      <div class="fact">
+        <span class="eyebrow">Share of your misses vs exam weight</span>
+        <div class="tbl-wrap" style="border:none">
+          <table>
+            <thead><tr><th>Domain</th><th class="num">Exam</th><th class="num">Your misses</th></tr></thead>
+            <tbody>
+              <tr><td>Development with AWS Services</td><td class="num">32%</td><td class="num">34% · 106</td></tr>
+              <tr><td>Security</td><td class="num">26%</td><td class="num">28% · 88</td></tr>
+              <tr><td>Deployment</td><td class="num">24%</td><td class="num">17% · 54</td></tr>
+              <tr><td>Troubleshooting &amp; Optimization</td><td class="num">18%</td><td class="num">20% · 62</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <span>Misses track the exam weights, so the domain view hides the signal. The topic view in the Fix-first list shows it.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PATTERNS ================= -->
+<section id="patterns">
+  <div class="sec-head">
+    <p class="eyebrow">Diagnosis</p>
+    <h2>How you lose points</h2>
+    <p>Six habits explain most of the misses, independent of the service being tested.</p>
+  </div>
+  <div class="patterns">
+    <article class="pattern">
+      <span class="big">28×</span>
+      <h3>Retakes repeat the same wrong option</h3>
+      <p>On the four tests you retook, 43 of your 128 first-attempt misses were wrong again, and in 28 you chose the identical wrong option: “40 RCU” twice, “one SNS topic per partner” twice in Exam 01 and again in Practice Test 2, “fix the bucket policy” for an SSE-KMS AccessDenied twice in Exam 01 and again in Practice Test 3.</p>
+      <p class="fix"><b>Fix:</b> before a retake, write the one-line rule for each miss (the Repeat misses table has them).</p>
+    </article>
+    <article class="pattern">
+      <span class="big">46 of 53</span>
+      <h3>Half-right on “Select TWO”</h3>
+      <p>In 46 of your 53 multi-select misses one pick was correct. The second pick lost the point: “attach an Elastic IP” for failing health checks, “merge shards” for Kinesis throttling, “ConsistentRead=true” for an all-or-nothing transfer, “deploy across Regions” as an ELB benefit.</p>
+      <p class="fix"><b>Fix:</b> judge each option alone. Would it fix the stated symptom by itself? Drop options that only sound related.</p>
+    </article>
+    <article class="pattern">
+      <span class="big">12+</span>
+      <h3>Choosing features that don't exist</h3>
+      <p>RDS auto-scaling on connection count (E1a1-Q3, E1a3-Q44), a Lambda CPU setting (P1a1-Q47), header value <code>sse:s3</code> (E1a1-Q13, E1a3-Q36), <code>iam decode-authorization-message</code> (E1a3-Q18, P4a1-Q27), “API Gateway User Pools” (P3a1-Q42), pre-scaling an SQS queue (P3a1-Q52), <code>X-Forwarded-From</code> (P3a1-Q12), <code>BatchDeleteItem</code> (P4a1-Q35), CloudFront Functions on origin events (E2a1-Q51, E2a2-Q33), ALB SSL pass-through (E4a1-Q7), <code>cloudformation upload</code> (P4a1-Q40), an “AWS Organizations template” (E2a2-Q34).</p>
+      <p class="fix"><b>Fix:</b> if you can't name the API call or console setting, treat the option as a distractor.</p>
+    </article>
+    <article class="pattern">
+      <span class="big">9</span>
+      <h3>Building what a setting already does</h3>
+      <p>Migrating to Aurora instead of enabling RDS storage autoscaling (E4a1-Q1), one SNS topic per partner instead of filter policies (3×), per-Region Lambda functions instead of StackSets (E2a1-Q37), a dedicated EC2 box for sessions instead of ElastiCache (2×), encrypting with KMS before storing instead of a SecureString (P4a1-Q42), a Kinesis stream instead of DynamoDB Streams (E3a1-Q2).</p>
+      <p class="fix"><b>Fix:</b> “least effort / most efficient / minimal code” means turn on the built-in feature.</p>
+    </article>
+    <article class="pattern">
+      <span class="big">11</span>
+      <h3>Negatively worded questions</h3>
+      <p>Eleven misses came from NOT / CANNOT questions. “Which does NOT help debug missing X-Ray data?” you answered CloudTrail three times (E4a1-Q16, P1a1-Q18, P1a2-Q30); CloudTrail does help, sampling doesn't. Twice you picked true statements for an “Auto Scaling statements that are NOT correct” question.</p>
+      <p class="fix"><b>Fix:</b> mark every option true/false first, then pick the false or useless one.</p>
+    </article>
+    <article class="pattern">
+      <span class="big">8 of 8</span>
+      <h3>Fixes on retake were still guesses</h3>
+      <p>You used the “unsure” flag on Exam 02 attempt 2 and both Practice Test 4 attempts: 40 flags, 19 right, 21 wrong. Every one of the 8 questions you fixed on a retake was still flagged unsure (FIFO dedup ID, GSI design, conditional writes, ResultPath, <code>aws:kms</code> header, STS decode, Kinesis partition key, cross-account roles).</p>
+      <p class="fix"><b>Fix:</b> read the explanation for every flagged question you got right; those are your next misses.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ================= FIX FIRST ================= -->
+<section id="fix-first">
+  <div class="sec-head">
+    <p class="eyebrow">Plan</p>
+    <h2>Fix-first list</h2>
+    <p>Topics ranked by wrong answers across all 12 attempts. “Missed again” counts questions you got wrong on both attempts. Tick a topic when you can explain every rule in it; ticks are saved in this browser only.</p>
+    <p class="progress" id="ff-progress" aria-live="polite">0 of 14 topics reviewed</p>
+  </div>
+  <ol class="ff" id="ff-list">
+    <li data-key="m-dynamodb"><span class="rank">1</span><span class="name"><a href="#m-dynamodb">DynamoDB</a><span class="sub">consistency &amp; transactions 10 · keys &amp; indexes 9 · Scan/Query 6 · RCU/WCU math 5 · other 3</span></span><span class="barcell"><span class="bar"><span style="width:100%"></span></span><span class="n">33 misses <small>7/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 4</span><label><input type="checkbox" id="rv-m-dynamodb">Reviewed</label></span></li>
+    <li data-key="m-iam"><span class="rank">2</span><span class="name"><a href="#m-iam">IAM, STS &amp; credentials</a><span class="sub">roles for compute, credential chain, cross-account, policy logic</span></span><span class="barcell"><span class="bar"><span style="width:81.8%"></span></span><span class="n">27 misses <small>8/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 4</span><label><input type="checkbox" id="rv-m-iam">Reviewed</label></span></li>
+    <li data-key="m-messaging"><span class="rank">3</span><span class="name"><a href="#m-messaging">SQS, SNS &amp; Kinesis</a><span class="sub">SQS 13 · SNS &amp; event triggers 7 · Kinesis 7</span></span><span class="barcell"><span class="bar"><span style="width:81.8%"></span></span><span class="n">27 misses <small>8/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 4</span><label><input type="checkbox" id="rv-m-messaging">Reviewed</label></span></li>
+    <li data-key="m-encryption"><span class="rank">4</span><span class="name"><a href="#m-encryption">KMS &amp; S3 encryption</a><span class="sub">KMS &amp; envelope encryption 13 · S3 encryption enforcement 12</span></span><span class="barcell"><span class="bar"><span style="width:75.8%"></span></span><span class="n">25 misses <small>8/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 5</span><label><input type="checkbox" id="rv-m-encryption">Reviewed</label></span></li>
+    <li data-key="m-cicd"><span class="rank">5</span><span class="name"><a href="#m-cicd">CI/CD &amp; infrastructure as code</a><span class="sub">CloudFormation, SAM &amp; CDK 16 · CodePipeline, CodeBuild, CodeCommit, Amplify 8</span></span><span class="barcell"><span class="bar"><span style="width:72.7%"></span></span><span class="n">24 misses <small>6/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 3</span><label><input type="checkbox" id="rv-m-cicd">Reviewed</label></span></li>
+    <li data-key="m-observability"><span class="rank">6</span><span class="name"><a href="#m-observability">X-Ray &amp; CloudWatch</a><span class="sub">X-Ray 12 · CloudWatch &amp; EventBridge 9</span></span><span class="barcell"><span class="bar"><span style="width:63.6%"></span></span><span class="n">21 misses <small>8/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 2</span><label><input type="checkbox" id="rv-m-observability">Reviewed</label></span></li>
+    <li data-key="m-caching"><span class="rank">7</span><span class="name"><a href="#m-caching">Caching, sessions &amp; RDS</a><span class="sub">ElastiCache, DAX &amp; read replicas 14 · RDS 7</span></span><span class="barcell"><span class="bar"><span style="width:63.6%"></span></span><span class="n">21 misses <small>7/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 4</span><label><input type="checkbox" id="rv-m-caching">Reviewed</label></span></li>
+    <li data-key="m-deploy"><span class="rank">8</span><span class="name"><a href="#m-deploy">Deployment policies</a><span class="sub">Elastic Beanstalk 14 · CodeDeploy 6 · 3 of the 6 EB questions in Exam 01 missed on both attempts</span></span><span class="barcell"><span class="bar"><span style="width:60.6%"></span></span><span class="n">20 misses <small>6/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 4</span><label><input type="checkbox" id="rv-m-deploy">Reviewed</label></span></li>
+    <li data-key="m-lambda"><span class="rank">9</span><span class="name"><a href="#m-lambda">Lambda</a><span class="sub">configuration &amp; performance 10 · versions &amp; aliases 6 · concurrency 4</span></span><span class="barcell"><span class="bar"><span style="width:60.6%"></span></span><span class="n">20 misses <small>8/8 tests</small></span></span><span class="tags"><label><input type="checkbox" id="rv-m-lambda">Reviewed</label></span></li>
+    <li data-key="m-network"><span class="rank">10</span><span class="name"><a href="#m-network">Load balancing &amp; networking</a><span class="sub">health checks, SG vs NACL, cross-zone, ALB vs NLB</span></span><span class="barcell"><span class="bar"><span style="width:57.6%"></span></span><span class="n">19 misses <small>6/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 3</span><label><input type="checkbox" id="rv-m-network">Reviewed</label></span></li>
+    <li data-key="m-cognito"><span class="rank">11</span><span class="name"><a href="#m-cognito">Cognito</a><span class="sub">user pools vs identity pools in 12 of the 15</span></span><span class="barcell"><span class="bar"><span style="width:45.5%"></span></span><span class="n">15 misses <small>6/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 3</span><label><input type="checkbox" id="rv-m-cognito">Reviewed</label></span></li>
+    <li data-key="m-apigw"><span class="rank">12</span><span class="name"><a href="#m-apigw">API Gateway &amp; AppSync</a><span class="sub">authorizers, stages, logs, usage plans, caching</span></span><span class="barcell"><span class="bar"><span style="width:45.5%"></span></span><span class="n">15 misses <small>8/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 1</span><label><input type="checkbox" id="rv-m-apigw">Reviewed</label></span></li>
+    <li data-key="m-cloudfront"><span class="rank">13</span><span class="name"><a href="#m-cloudfront">CloudFront &amp; edge</a><span class="sub">Lambda@Edge vs CloudFront Functions, signed URLs, key pairs</span></span><span class="barcell"><span class="bar"><span style="width:39.4%"></span></span><span class="n">13 misses <small>7/8 tests</small></span></span><span class="tags"><span class="chip bad">missed again 2</span><label><input type="checkbox" id="rv-m-cloudfront">Reviewed</label></span></li>
+    <li data-key="m-other" class="low"><span class="rank">14</span><span class="name"><a href="#m-other">Smaller topics</a><span class="sub">EC2, Auto Scaling &amp; billing basics 14 (mostly outside DVA-C02 scope) · S3 access 8 · Step Functions 4 · config &amp; secrets 4</span></span><span class="barcell"><span class="bar"><span style="width:90.9%"></span></span><span class="n">30 misses <small>8/8 tests</small></span></span><span class="tags"><span class="chip warn">lower yield</span><span class="chip bad">missed again 4</span><label><input type="checkbox" id="rv-m-other">Reviewed</label></span></li>
+  </ol>
+</section>
+
+<!-- ================= CONFUSED PAIRS ================= -->
+<section id="pairs">
+  <div class="sec-head">
+    <p class="eyebrow">Concepts</p>
+    <h2>Confused pairs</h2>
+    <p>The look-alike choices behind the most misses, ordered by how often each one cost you. The tell-tale words are what the question stem usually contains.</p>
+  </div>
+  <div class="pairs">
+
+    <article class="pair">
+      <div class="pair-head"><h3>Cognito user pool vs identity pool</h3><span class="chip bad">12 misses</span></div>
+      <div class="vs">
+        <div><b>User pool</b>A user directory: sign-up, sign-in, MFA, returns JWTs (ID, access, refresh). Plugs into the ALB authenticate action and API Gateway's Cognito authorizer.</div>
+        <div><b>Identity pool</b>Swaps an identity (user pool, SAML, OIDC, social, or a guest) for temporary AWS credentials via authenticated and unauthenticated IAM roles. Used to call S3 or DynamoDB directly.</div>
+      </div>
+      <p class="tell"><mark>sign-up, JWT, user management, login offload</mark> → user pool · <mark>AWS credentials, guest access, direct S3/DynamoDB</mark> → identity pool</p>
+      <p class="ids">E2a1-Q8 · E2a1-Q18 · E2a2-Q6 · E2a1-Q31 · E2a2-Q57 · E4a1-Q23 · P1a2-Q14 · P2a1-Q52 · P2a1-Q60 · P2a1-Q63 · P3a1-Q42 · P4a1-Q11</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Elastic Beanstalk: Rolling + batch vs Immutable</h3><span class="chip bad">11 misses</span></div>
+      <div class="vs">
+        <div><b>Rolling with additional batch</b>Launches one extra batch first, then updates the existing instances batch by batch. Full capacity, small extra cost, reuses the fleet.</div>
+        <div><b>Immutable</b>Launches a complete new set of instances in a temporary Auto Scaling group. Full capacity, higher cost, fastest and safest rollback, original instances never touched.</div>
+      </div>
+      <p class="tell"><mark>full capacity + existing instances / cost-effective</mark> → rolling with additional batch · <mark>new instances only / minimise failed-deploy impact</mark> → immutable (or blue/green)</p>
+      <p class="ids">E1a1-Q9 · Q19 · Q38 · Q39 · Q40 · Q59 · E1a3-Q10 · Q41 · Q49 · P1a1-Q17 · P1a1-Q36</p>
+    </article>
+
+
+    <article class="pair">
+      <div class="pair-head"><h3>SSE-S3 vs SSE-KMS vs SSE-C</h3><span class="chip bad">8 misses</span></div>
+      <div class="vs">
+        <div><b>SSE-S3</b>Header <code>x-amz-server-side-encryption: AES256</code>. S3 manages keys; default for every new object since Jan 2023.</div>
+        <div><b>SSE-KMS</b>Header value <code>aws:kms</code>. Key policies, CloudTrail audit, rotation. Uploader needs <code>kms:GenerateDataKey</code>; reader needs <code>kms:Decrypt</code>.</div>
+      </div>
+      <p class="tell"><b>SSE-C:</b> you send your own key on every request; AWS never stores it and can't rotate it. <mark>full control to create, rotate, disable keys with an AWS service</mark> → SSE-KMS with a customer managed key.</p>
+      <p class="ids">E1a1-Q13 · E1a3-Q36 · E1a1-Q22 · E1a3-Q35 · P3a1-Q59 · P3a1-Q6 · P4a1-Q55 · P4a2-Q46</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Which role? Instance, task, execution, service</h3><span class="chip bad">8 misses</span></div>
+      <div class="vs">
+        <div><b>EC2 instance profile</b>Permissions for code running on the instance. <b style="margin-top:6px">ECS task role</b>Permissions for code in a container, set per task definition.</div>
+        <div><b>ECS task execution role</b>Lets the ECS agent pull ECR images, send logs, read secrets. <b style="margin-top:6px">CodeDeploy service role</b>Lets CodeDeploy touch your instances, Auto Scaling groups and load balancers. Never your app's S3 access.</div>
+      </div>
+      <p class="tell"><mark>app gets AccessDenied after a successful deployment</mark> → fix the EC2 instance role · <mark>ECS + per-service permissions</mark> → one task role per task definition</p>
+      <p class="ids">E1a1-Q53 · E2a2-Q7 · E2a1-Q26 · E2a2-Q30 · E3a1-Q53 · E4a1-Q14 · P4a1-Q65 · P4a2-Q40</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>DynamoDB write semantics</h3><span class="chip bad">8 misses</span></div>
+      <div class="vs">
+        <div><b>TransactWriteItems</b>All-or-nothing across up to 100 actions in one or more tables; 2× WCU; idempotent for 10 min with a ClientRequestToken. <b style="margin-top:6px">BatchWriteItem</b>Up to 25 puts/deletes, not atomic, can partly fail.</div>
+        <div><b>Conditional write</b>A ConditionExpression stops one writer silently overwriting another (optimistic locking). <b style="margin-top:6px">Atomic counter</b>Increments a number in place; no protection for other attributes. <b style="margin-top:6px">ConsistentRead</b>Reads only; no effect on writes.</div>
+      </div>
+      <p class="tell"><mark>all-or-nothing, atomic transfer</mark> → transactions · <mark>updates overwrite each other</mark> → conditional writes · <mark>stale read right after a write</mark> → ConsistentRead=true</p>
+      <p class="ids">E1a1-Q56 · E1a3-Q61 · E2a1-Q43 · P2a1-Q17 · E2a1-Q52 · P2a1-Q3 · P2a1-Q58 · E3a1-Q61</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>KMS Encrypt vs GenerateDataKey</h3><span class="chip bad">7 misses</span></div>
+      <div class="vs">
+        <div><b>Encrypt</b>You send up to 4,096 bytes; KMS encrypts with a key that never leaves KMS. Safest for tiny secrets, even if the store has no KMS integration.</div>
+        <div><b>GenerateDataKey</b>Returns a plaintext data key plus an encrypted copy. Encrypt locally (envelope encryption), discard the plaintext key, store the encrypted key with the data. Use for anything over 4 KB or a unique key per file. <em>WithoutPlaintext</em> returns only the encrypted copy for later use.</div>
+      </div>
+      <p class="tell"><mark>≤ 4 KB</mark> → Encrypt · <mark>KB-to-GB payloads, unique key per file</mark> → GenerateDataKey</p>
+      <p class="ids">E2a1-Q9 · E2a2-Q64 · E2a1-Q58 · E2a2-Q3 · E4a1-Q38 · P2a1-Q25 · P3a1-Q53</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>SQS timing knobs</h3><span class="chip bad">7 misses</span></div>
+      <div class="vs">
+        <div><b>Visibility timeout</b>Hides a received message from other consumers while you work (default 30 s, max 12 h). Extend one message with <code>ChangeMessageVisibility</code>. <b style="margin-top:6px">Delay queue / DelaySeconds</b>Postpones delivery of new messages (0–15 min).</div>
+        <div><b>Long polling</b><code>ReceiveMessageWaitTimeSeconds</code> / <code>WaitTimeSeconds</code> up to 20 s: fewer empty responses, lower cost, faster pickup of sparse messages. <b style="margin-top:6px">Retention</b><code>MessageRetentionPeriod</code>, 60 s–14 days, default 4 days.</div>
+      </div>
+      <p class="tell"><mark>processed twice because the job runs long</mark> → ChangeMessageVisibility · <mark>empty responses, rising cost</mark> → long polling · <mark>postpone delivery</mark> → delay queue</p>
+      <p class="ids">E1a1-Q20 · E1a3-Q25 · E1a1-Q60 · E3a1-Q48 · E4a1-Q5 · P1a1-Q14 · P2a1-Q48</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>X-Ray annotations vs metadata vs sampling</h3><span class="chip bad">5 misses</span></div>
+      <div class="vs">
+        <div><b>Annotations</b>Indexed key-value pairs (string, number, Boolean), up to 50 per trace, usable in filter expressions. <b style="margin-top:6px">Metadata</b>Any JSON, stored but not indexed.</div>
+        <div><b>Sampling</b>Decides how many requests get traced: the lever for cost. It never explains why no data arrives at all, so it is the “does NOT help debugging” answer.</div>
+      </div>
+      <p class="tell"><mark>filter / search traces by a custom value</mark> → annotations · <mark>X-Ray bill too high</mark> → sampling rules</p>
+      <p class="ids">E3a1-Q6 · P3a1-Q29 · E4a1-Q16 · P1a1-Q18 · P1a2-Q30</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Read replicas vs Multi-AZ vs ElastiCache</h3><span class="chip bad">5 misses</span></div>
+      <div class="vs">
+        <div><b>Read replica</b>Asynchronous, readable copy (same or another Region). App sends reads to the replica endpoint and keeps plain SQL. Promote it for disaster recovery.</div>
+        <div><b>Multi-AZ (DB instance)</b>Synchronous standby, not readable, automatic failover; patches the standby first, fails over, then patches the old primary. <b style="margin-top:6px">ElastiCache</b>A cache your code must read and write explicitly.</div>
+      </div>
+      <p class="tell"><mark>read-heavy, keep SQL, least refactoring now and later</mark> → read replicas (you chose Redis three times)</p>
+      <p class="ids">E2a1-Q23 · P1a1-Q48 · P1a2-Q47 · E3a1-Q5 · P3a1-Q27</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Lambda reserved vs provisioned concurrency</h3><span class="chip bad">4 misses</span></div>
+      <div class="vs">
+        <div><b>Reserved</b>Sets aside concurrency for one function and caps it there. Stops a noisy function starving the others. No cold-start effect, no extra charge.</div>
+        <div><b>Provisioned</b>Keeps environments initialised, so no cold starts. Billed while configured; schedule or target-track it with Application Auto Scaling before a known surge.</div>
+      </div>
+      <p class="tell"><mark>function B throttles function A</mark> → reserved on B · <mark>latency during an expected spike</mark> → provisioned + scheduled scaling · <mark>rate × duration &gt; 1,000</mark> → quota increase</p>
+      <p class="ids">E1a1-Q17 · E1a1-Q51 · E2a1-Q19 · E3a1-Q62</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>GSI vs LSI</h3><span class="chip bad">4 misses</span></div>
+      <div class="vs">
+        <div><b>GSI</b>Any partition and sort key, add any time, eventually consistent reads only, its own throughput (an under-provisioned GSI throttles table writes).</div>
+        <div><b>LSI</b>Same partition key, alternative sort key, created only with the table, strongly consistent reads allowed, max 5 per table.</div>
+      </div>
+      <p class="tell"><mark>new access pattern on a different attribute</mark> → GSI · <mark>alternate key decided at table creation</mark> → LSI</p>
+      <p class="ids">E1a1-Q18 · E1a1-Q36 · E2a1-Q65 · P4a1-Q34</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Lambda@Edge vs CloudFront Functions</h3><span class="chip bad">4 misses</span></div>
+      <div class="vs">
+        <div><b>CloudFront Functions</b>JavaScript, viewer request and viewer response only, sub-millisecond, no network access, no request body. Header rewrites, redirects, cache-key tweaks, token checks.</div>
+        <div><b>Lambda@Edge</b>Node.js or Python, all four events including origin request and origin response (these run only on cache misses), network access and the AWS SDK.</div>
+      </div>
+      <p class="tell"><mark>only on cache miss / change the origin's response / call STS or other services</mark> → Lambda@Edge</p>
+      <p class="ids">E1a3-Q52 · E2a1-Q51 · E2a2-Q33 · E3a1-Q25</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Access logs vs execution logs</h3><span class="chip bad">4 misses</span></div>
+      <div class="vs">
+        <div><b>API Gateway access logs</b>One line per request in a format you choose: who called, how they authenticated, status, latency. <b style="margin-top:6px">Execution logs</b>What happened inside API Gateway: errors, payloads, authorizer and integration traces.</div>
+        <div><b>ALB access logs</b>Per-request client IP, latencies, paths, status codes, stored in S3. CloudWatch metrics are aggregates; ALB request tracing only adds an <code>X-Amzn-Trace-Id</code> header.</div>
+      </div>
+      <p class="tell"><mark>who accessed and how</mark> → access logs · <mark>authorizer errors / execution traces</mark> → execution logging</p>
+      <p class="ids">E2a1-Q22 · E2a2-Q26 · E4a1-Q8 · P1a2-Q61</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Session state: sticky sessions vs a shared store</h3><span class="chip bad">4 misses</span></div>
+      <div class="vs">
+        <div><b>Sticky sessions</b>Pin a client to one target. The session still dies with the instance, and they can skew load.</div>
+        <div><b>Shared store</b>ElastiCache (Redis/Valkey) or DynamoDB. Survives instance failure, Auto Scaling and blue/green swaps.</div>
+      </div>
+      <p class="tell"><mark>session must survive instance failure / users logged out after each deployment</mark> → ElastiCache or DynamoDB</p>
+      <p class="ids">E2a1-Q56 · E2a2-Q48 · E3a1-Q10 · P4a1-Q51</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>CodeDeploy vocabulary</h3><span class="chip bad">4 misses</span></div>
+      <div class="vs">
+        <div><b>In-place vs blue/green</b>EC2: update existing instances, or provision a replacement fleet and reroute traffic. “Immutable” is an Elastic Beanstalk policy, not a CodeDeploy type.</div>
+        <div><b>Canary vs linear</b>Canary: two steps (e.g. 10%, then the rest after 5 min). Linear: equal steps at a fixed interval. Shortest gradual option: <code>Canary10Percent5Minutes</code>.</div>
+      </div>
+      <p class="tell"><mark>provision new environment, re-route traffic</mark> → blue/green · <mark>equal increments every N minutes</mark> → linear</p>
+      <p class="ids">E2a1-Q57 · E2a2-Q45 · E2a1-Q20 · E2a1-Q64</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Security group vs network ACL</h3><span class="chip bad">3 misses</span></div>
+      <div class="vs">
+        <div><b>Security group</b>Instance/ENI level, stateful (replies allowed automatically), allow rules only.</div>
+        <div><b>Network ACL</b>Subnet level, stateless (needs an outbound rule for the reply), allow and deny rules, evaluated in number order.</div>
+      </div>
+      <p class="tell"><mark>custom NACL, requests arrive but no response</mark> → allow outbound ephemeral ports 1024–65535</p>
+      <p class="ids">E1a1-Q24 · E1a1-Q55 · P1a1-Q24</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>Cross-account: where the trust goes</h3><span class="chip bad">3 misses</span></div>
+      <div class="vs">
+        <div><b>Account that owns the resource</b>Creates the role, attaches the permissions policy, and a trust policy naming the calling account or role.</div>
+        <div><b>Calling account</b>Grants its user or execution role <code>sts:AssumeRole</code> on that role ARN; code calls AssumeRole and uses the temporary credentials.</div>
+      </div>
+      <p class="tell">You put the trust policy on the caller's side each time. Resource-based policies (S3, SQS, KMS, and DynamoDB since March 2024) are the role-free alternative.</p>
+      <p class="ids">E4a1-Q6 · P2a1-Q20 · P4a1-Q21</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>KPL vs Kinesis Agent vs KCL</h3><span class="chip bad">3 misses</span></div>
+      <div class="vs">
+        <div><b>KPL</b>Library inside your producer code: batching, aggregation, retries. <b style="margin-top:6px">Kinesis Agent</b>Standalone agent on Linux servers that tails log files into a stream. No code.</div>
+        <div><b>KCL</b>Consumer library: shard leases and checkpoints. Swapping KPL for the Agent never fixes throughput errors; shards and backoff do.</div>
+      </div>
+      <p class="tell"><mark>log files on EC2 → Kinesis</mark> → Kinesis Agent · <mark>ProvisionedThroughputExceeded</mark> → add shards + exponential backoff</p>
+      <p class="ids">E1a1-Q61 · P2a1-Q24 · P4a1-Q25</p>
+    </article>
+
+    <article class="pair">
+      <div class="pair-head"><h3>ALB vs NLB</h3><span class="chip bad">3 misses</span></div>
+      <div class="vs">
+        <div><b>ALB</b>Layer 7 HTTP/HTTPS: path and host routing, Lambda targets, Cognito/OIDC auth, TLS termination with ACM, client IP in <code>X-Forwarded-For</code>.</div>
+        <div><b>NLB</b>Layer 4 TCP/UDP/TLS: millions of requests per second, static IPs, preserves the client's source IP and port, TLS pass-through via a TCP listener.</div>
+      </div>
+      <p class="tell"><mark>source IP and port without X-Forwarded-For</mark> → NLB · <mark>offload HTTPS from web servers</mark> → ALB HTTPS listener + ACM certificate</p>
+      <p class="ids">P4a1-Q5 · P3a1-Q12 · E4a1-Q7</p>
+    </article>
+
+  </div>
+</section>
+
+<!-- ================= MODULE: DYNAMODB ================= -->
+<section id="m-dynamodb" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 33 misses · 7 of 8 tests</p>
+    <h2>DynamoDB</h2>
+    <p>Your biggest topic. Capacity math is pure mechanics, so it is the fastest marks to win back.</p>
+  </div>
+
+  <div class="card calc" aria-labelledby="calc-title">
+    <div class="viz-head">
+      <h3 id="calc-title">RCU / WCU calculator</h3>
+      <div class="presets"><span class="small">Load your misses:</span>
+        <button class="btn" type="button" data-preset="4.5,20,eventual,12,standard">E2a1-Q47</button>
+        <button class="btn" type="button" data-preset="12,200,eventual,0,standard">E3a1-Q39</button>
+        <button class="btn" type="button" data-preset="6,10,strong,0,standard">P2a1-Q55</button>
+        <button class="btn" type="button" data-preset="12,16,eventual,0,standard">P4a1-Q52</button>
+      </div>
+    </div>
+    <div class="calc-grid">
+      <div class="field"><label for="c-size">Item size (KB)</label><input id="c-size" type="number" min="0.1" step="0.1" value="4.5"></div>
+      <div class="field"><label for="c-reads">Reads / second</label><input id="c-reads" type="number" min="0" step="1" value="20"></div>
+      <div class="field"><label for="c-rtype">Read type</label><select id="c-rtype"><option value="strong">Strongly consistent</option><option value="eventual" selected>Eventually consistent</option><option value="transactional">Transactional</option></select></div>
+      <div class="field"><label for="c-writes">Writes / second</label><input id="c-writes" type="number" min="0" step="1" value="12"></div>
+      <div class="field"><label for="c-wtype">Write type</label><select id="c-wtype"><option value="standard" selected>Standard</option><option value="transactional">Transactional</option></select></div>
+    </div>
+    <div class="calc-out" aria-live="polite">
+      <div class="calc-res"><span class="eyebrow">Read capacity</span><span class="res" id="c-rcu">20 RCU</span><span class="how" id="c-rhow">4.5 KB → 8 KB = 2 units × ½ (eventual) = 1 per read × 20/s</span></div>
+      <div class="calc-res"><span class="eyebrow">Write capacity</span><span class="res" id="c-wcu">60 WCU</span><span class="how" id="c-whow">4.5 KB → 5 KB = 5 units × 1 (standard) × 12/s</span></div>
+    </div>
+    <p class="small">Order matters: round the item size up first (reads to 4 KB blocks, writes to 1 KB), then apply the read type, then multiply by the rate.</p>
+  </div>
+
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Capacity math, in order:</strong> round up the size (read 4 KB, write 1 KB) → strongly consistent ×1, eventually ×½, transactional ×2; writes standard ×1, transactional ×2 → multiply by the rate. <span class="trap">three answers were exactly double the key (40 instead of 20 RCU twice, 48 instead of 24), so the eventual-consistency halving was skipped; 1,200 instead of 300 is what raw KB gives instead of 4 KB blocks; 30 instead of 20 misses that 6 KB rounds up to 8 KB = 2 units.</span> <span class="ids">E2a1-Q47 · E2a2-Q9 · P4a1-Q52 · E3a1-Q39 · P2a1-Q55</span></li>
+      <li><strong>Query reads one partition; Scan reads and bills every item it evaluates.</strong> FilterExpression and ProjectionExpression only trim the response, not the RCUs. Least RCU on a GSI = Query with eventually consistent reads (GSIs only offer eventual anyway). <span class="ids">E4a1-Q35 · E3a1-Q1</span></li>
+      <li><strong>Faster full scan without hurting production → Parallel Scan + a small <code>Limit</code>.</strong> Segments run concurrently; Limit paces each request so live traffic keeps its capacity. <span class="trap">“increase RCUs” three times; the scenario always says production already uses about half the capacity and wants no impact.</span> <span class="ids">E1a1-Q35 · E2a1-Q6 · E2a2-Q1</span></li>
+      <li><strong>Many known keys at once → BatchGetItem</strong> (up to 100 items, 16 MB). <strong>Empty a whole table nightly → delete and recreate it</strong>; item-by-item deletes burn WCUs, and <code>BatchDeleteItem</code> doesn't exist. <span class="ids">E2a2-Q38 · P4a1-Q35</span></li>
+      <li><strong>New access pattern on a different attribute → GSI.</strong> Leaderboards: GSI partition key = sport or artist, sort key = score. An LSI can't change the partition key. <span class="ids">E1a1-Q18 · E2a1-Q65</span></li>
+      <li><strong>Several query patterns:</strong> table key = name (partition) + version (sort); GSI on category (+ name). <span class="trap">you made category the table's partition key twice, and once chose RDS.</span> <span class="ids">P1a1-Q19 · P1a2-Q45 · E1a1-Q65</span></li>
+      <li><strong>LSI only at table creation; GSIs have their own capacity.</strong> Throttling that starts after adding indexes, while the table's own capacity is fine, means the GSI is under-provisioned. <span class="ids">P4a1-Q34 · E1a1-Q36</span></li>
+      <li><strong>Throttled while total consumed capacity is low = hot partition.</strong> Fix the key: higher cardinality, or write-sharding with a random or calculated suffix. Buying more capacity is the wrong, expensive answer. <span class="ids">E1a1-Q23 · E4a1-Q46</span></li>
+      <li><strong>Stale read right after a write → <code>ConsistentRead=true</code> on GetItem/Query.</strong> It does nothing on PutItem/UpdateItem, and DAX won't help (it serves eventually consistent reads). <span class="ids">E3a1-Q61 · P2a1-Q58</span></li>
+      <li><strong>Writers overwrite each other → conditional writes.</strong> <strong>All-or-nothing → TransactWriteItems.</strong> <span class="trap">ConsistentRead twice and BatchWriteItem twice for atomic transfers.</span> <span class="ids">E2a1-Q52 · P2a1-Q3 · E1a1-Q56 · E1a3-Q61 · E2a1-Q43 · P2a1-Q17</span></li>
+      <li><strong>Idempotent API:</strong> store each request ID in a DynamoDB table and check it before processing. <strong>Upsert with least privilege:</strong> UpdateItem creates missing items, so <code>UpdateItem</code> + <code>GetItem</code> is enough. <span class="ids">E1a3-Q57 · P2a1-Q19</span></li>
+      <li><strong>React to item changes without touching the app → DynamoDB Streams + Lambda.</strong> Read cache with an API-compatible client → DAX. Encrypt before the data reaches DynamoDB → AWS Database Encryption SDK (formerly the DynamoDB Encryption Client). ThrottlingException and no SDK for your language → write retries with exponential backoff yourself. <span class="ids">E3a1-Q2 · E3a1-Q14 · E2a1-Q42 · E3a1-Q15</span></li>
+    </ul>
+  </div>
+
+  <div class="mod-block">
+    <h3>Trigger → answer</h3>
+    <ul class="triggers">
+      <li><span class="cue"><mark>throttled although consumed capacity is well below provisioned</mark></span><span class="ans">hot partition: redesign or shard the key</span></li>
+      <li><span class="cue"><mark>multiple workers / divide into segments / rate-limit the scan</mark></span><span class="ans">Parallel Scan + Limit</span></li>
+      <li><span class="cue"><mark>reads after writes return old data</mark></span><span class="ans">ConsistentRead=true</span></li>
+      <li><span class="cue"><mark>prevent updates overwriting each other</mark></span><span class="ans">conditional write</span></li>
+      <li><span class="cue"><mark>all-or-nothing across items or tables</mark></span><span class="ans">TransactWriteItems</span></li>
+      <li><span class="cue"><mark>read many known items in one call</mark></span><span class="ans">BatchGetItem</span></li>
+      <li><span class="cue"><mark>process records as soon as they are inserted or modified</mark></span><span class="ans">Streams + Lambda</span></li>
+      <li><span class="cue"><mark>encrypted before it is submitted to DynamoDB</mark></span><span class="ans">client-side encryption SDK</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: DEPLOY ================= -->
+<section id="m-deploy" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 20 misses · 6 of 8 tests</p>
+    <h2>Deployment policies: Elastic Beanstalk &amp; CodeDeploy</h2>
+    <p>Half of Exam 01's Elastic Beanstalk questions were wrong on both attempts, two of them with a different wrong policy each time, which points to guessing. Learn the table, then use the decision ladder.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>EB policy</th><th>Capacity during deploy</th><th>New instances?</th><th>Extra cost</th><th>If it fails</th><th>Pick it when</th></tr></thead>
+      <tbody>
+        <tr><td><b>All at once</b> (default)</td><td>Drops to zero briefly</td><td>No</td><td>None</td><td>Redeploy a good version</td><td>Dev/test; fastest</td></tr>
+        <tr><td><b>Rolling</b></td><td>Reduced by one batch</td><td>No</td><td>None</td><td>Finished batches keep the new version; terminated failed instances come back with the last <em>successful</em> version</td><td>Old and new versions may serve side by side; no extra cost</td></tr>
+        <tr><td><b>Rolling with additional batch</b></td><td>Full</td><td>One temporary batch</td><td>Small</td><td>As rolling</td><td>Full capacity while reusing the existing fleet; most cost-effective full-capacity option</td></tr>
+        <tr><td><b>Immutable</b></td><td>Full (double, briefly)</td><td>Full new set in a temporary ASG</td><td>Highest</td><td>New ASG terminated; originals untouched</td><td>New instances only; minimise failed-deploy impact; fastest rollback</td></tr>
+        <tr><td><b>Traffic splitting</b></td><td>Full</td><td>Full new set</td><td>Highest</td><td>Traffic moved back, new instances terminated</td><td>Canary test a % of traffic for an evaluation period (needs an ALB)</td></tr>
+        <tr><td><b>Blue/green</b> (separate environment + swap URLs)</td><td>Separate environment</td><td>Whole new environment</td><td>Highest</td><td>Swap back</td><td>Validate a parallel environment before cutting over</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mod-block">
+    <h3>Decision ladder for EB questions</h3>
+    <ol class="steps">
+      <li>Can capacity drop? Yes → <b>All at once</b> (downtime OK) or <b>Rolling</b> (keep serving, no extra cost).</li>
+      <li>Must keep full capacity and reuse current instances, or “most cost-effective” without losing capacity → <b>Rolling with additional batch</b>. With 3 instances and a floor of 2, batch size 1.</li>
+      <li>Only brand-new instances, or minimise the impact of a failed deployment → <b>Immutable</b> (and <b>blue/green</b> if two answers are needed).</li>
+      <li>Send a percentage of live traffic to the new version first → <b>Traffic splitting</b>.</li>
+    </ol>
+    <p class="small">Burst credits are lost when instances are replaced: immutable updates and traffic splitting (P1a1-Q17). One environment per purpose is normal: a single-instance dev environment and a production-like load-test environment (P4a1-Q63). Elastic Beanstalk itself is the answer for “just upload code” (P1a1-Q63).</p>
+    <p class="ids">EB misses: E1a1-Q9 · Q19 · Q38 · Q39 · Q40 · Q59 · E1a3-Q10 · Q41 · Q49 · E3a1-Q11 · P1a1-Q17 · Q36 · Q63 · P4a1-Q63</p>
+  </div>
+
+  <div class="mod-block">
+    <h3>CodeDeploy rules</h3>
+    <ul class="rules">
+      <li><strong>EC2: in-place or blue/green (on-premises servers: in-place only). Lambda and ECS: blue/green traffic shifting</strong> with Canary, Linear or AllAtOnce configs. <span class="trap">“Immutable” twice for “provision a new environment, then re-route traffic”.</span> <span class="ids">E2a1-Q57 · E2a2-Q45</span></li>
+      <li><strong>Rollback = a brand-new deployment of the last known good revision, with a new deployment ID.</strong> Automatic rollback fires on deployment failure or an alarm threshold. <span class="ids">E3a1-Q22</span></li>
+      <li><strong>EC2 in-place hook order:</strong> ApplicationStop → DownloadBundle → BeforeInstall → Install → AfterInstall → ApplicationStart → ValidateService. <span class="ids">P4a1-Q22</span></li>
+      <li><strong><code>appspec.yml</code> sits at the root of the revision</strong> and holds file mappings, permissions and hook scripts (ValidateService verifies success). <code>buildspec.yml</code> belongs to CodeBuild. <span class="ids">P2a1-Q33</span></li>
+      <li><strong>Package built elsewhere → upload the bundle to S3 → deploy with CodeDeploy.</strong> CodeDeploy can't read your local disk. <span class="ids">E3a1-Q28</span></li>
+      <li><strong>App AccessDenied after a successful deployment → fix the EC2 instance role</strong>, not the CodeDeploy service role. <span class="ids">P4a1-Q65 · P4a2-Q40</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: LAMBDA ================= -->
+<section id="m-lambda" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 20 misses · 8 of 8 tests</p>
+    <h2>Lambda</h2>
+    <p>One rule alone cost five marks in five different tests: CPU comes from memory.</p>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Slow, CPU-bound function → raise memory.</strong> CPU is allocated in proportion to memory (128–10,240 MB; about one vCPU at 1,769 MB). There is no CPU setting. <span class="trap">layers, async invocation, provisioned concurrency, “max CPU”, each once.</span> <span class="ids">E2a1-Q15 · E3a1-Q38 · E4a1-Q4 · P1a1-Q47 · P3a1-Q64</span></li>
+      <li><strong>Warm invocations still slow → create DB connections and SDK clients outside the handler</strong> so they are reused. “Max Memory Used” equal to “Memory Size” in the REPORT line = out of memory. <span class="ids">E2a1-Q29 · P4a1-Q9</span></li>
+      <li><strong>Concurrency ≈ requests per second × duration in seconds.</strong> 40 × 100 = 4,000 and 40 × 80 = 3,200, both above the default 1,000 per Region → request a quota increase (new accounts can start lower). <span class="ids">E2a1-Q19 · E3a1-Q62</span></li>
+      <li><strong>Reserved concurrency caps and guarantees one function; provisioned concurrency removes cold starts</strong> and can be scheduled with Application Auto Scaling. An ALB, CloudFront or API Gateway in front changes neither. <span class="ids">E1a1-Q17 · E1a1-Q51</span></li>
+      <li><strong>Versions are immutable; aliases are movable pointers.</strong> Roll back by repointing the alias. Minimal user impact = weighted alias (e.g. 10% to the new version), not a 100% switch. <span class="ids">E3a1-Q47 · E1a1-Q52</span></li>
+      <li><strong>API Gateway stages → stage variables naming an alias</strong> (<code>${stageVariables.alias}</code>). Each alias needs a resource-based policy letting API Gateway invoke it, or every call returns 500. A beta group gets its own stage pointing at the new version. <span class="ids">E3a1-Q4 · E2a2-Q50 · E2a1-Q7</span></li>
+      <li><strong>Packaging:</strong> ZIP up to 50 MB uploaded, 250 MB unzipped including layers; bundle the libraries in the ZIP or a layer. Container images up to 10 GB, Linux only, one architecture, must implement the Runtime API; test locally with the Runtime Interface Emulator. <span class="ids">E3a1-Q23 · P2a1-Q1</span></li>
+      <li><strong>Environment variables: 4 KB total, no limit on the count.</strong> Bigger secrets (1 MB, 5 MB) → envelope-encrypt and ship as a file. <span class="ids">P3a1-Q61 · E4a1-Q38 · P2a1-Q25</span></li>
+      <li><strong>Reach RDS in a private subnet → attach the function to the VPC</strong> (private subnets + security group). <strong>No logs at all → execution role lacks</strong> <code>logs:CreateLogGroup</code>, <code>CreateLogStream</code>, <code>PutLogEvents</code>. <span class="ids">P3a1-Q33 · E3a1-Q30</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: IAM ================= -->
+<section id="m-iam" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 27 misses · 8 of 8 tests</p>
+    <h2>IAM, STS &amp; credentials</h2>
+    <p>Missed in every test. Most misses pick long-term keys or put a policy on the wrong side.</p>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>No long-term keys on compute.</strong> EC2 → instance profile role. ECS → task role, one per task definition (not the service, not the instance profile). Lambda → execution role. <span class="trap">environment variables, <code>aws configure</code>, a credentials file (twice), one shared policy with principals.</span> <span class="ids">E1a1-Q53 · E2a2-Q7 · E2a1-Q26 · E2a2-Q30 · E3a1-Q53 · E4a1-Q14</span></li>
+      <li><strong>The SDK checks the instance profile last.</strong> Java's chain: system properties → environment variables → web identity → shared credentials/config files → container credentials → EC2 instance profile. Leftover keys in env vars silently win over the new role. <span class="ids">E2a1-Q28 · E2a2-Q19</span></li>
+      <li><strong>Cross-account:</strong> role in the resource-owning account with a trust policy naming the caller; the caller gets <code>sts:AssumeRole</code> and calls AssumeRole. Roles and resource policies can't bridge partitions (aws, aws-cn, aws-us-gov). <span class="ids">E4a1-Q6 · P2a1-Q20 · P4a1-Q21 · P3a1-Q7</span></li>
+      <li><strong>Explicit Deny beats any Allow; statement and policy order never matter.</strong> SCPs only restrict: block a few actions in one member account with a deny-list SCP. <span class="ids">P3a1-Q43 · E3a1-Q54</span></li>
+      <li><strong>Reading policies:</strong> Deny on <code>bucket/private*</code> + Allow Get/Put on <code>bucket/*</code> = every object except keys starting with “private”. Deny with <code>NumericGreaterThanIfExists aws:MultiFactorAuthAge 1800</code> = recent MFA needed for that one bucket. <span class="ids">P4a1-Q31 · E1a3-Q31</span></li>
+      <li><strong>One policy for per-user folders → policy variables</strong>, e.g. <code>arn:aws:s3:::bucket/user/${aws:username}/*</code>. <span class="trap">“policy resource” twice and “principal” once.</span> <span class="ids">P1a1-Q41 · P1a2-Q54 · E3a1-Q40</span></li>
+      <li><strong>“Encoded authorization failure message” → <code>aws sts decode-authorization-message</code></strong> (needs <code>sts:DecodeAuthorizationMessage</code>). <span class="trap">the IAM version, which doesn't exist, twice.</span> <span class="ids">E1a3-Q18 · P4a1-Q27</span></li>
+      <li><strong>Test a permission without acting:</strong> <code>--dry-run</code> (DryRunOperation vs UnauthorizedOperation) or the IAM policy simulator. <span class="ids">P2a1-Q36</span></li>
+      <li><strong>IAM Access Analyzer</strong> finds resources shared outside your account or organization and unused roles, keys and permissions. Not Trusted Advisor; not Access Advisor (last-accessed data for one identity). <span class="ids">E3a1-Q57 · P1a1-Q26 · P1a2-Q62</span></li>
+      <li><strong>IAM's only resource-based policy is the role trust policy.</strong> TLS server certificates are stored in ACM (preferred) or the IAM certificate store; CloudFormation only provisions resources. <span class="ids">P1a2-Q28 · P1a1-Q39 · P1a2-Q31</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: ENCRYPTION ================= -->
+<section id="m-encryption" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 25 misses · 8 of 8 tests</p>
+    <h2>KMS &amp; S3 encryption</h2>
+    <p>The most re-missed topic: five questions wrong on both attempts, four with the same wrong option.</p>
+  </div>
+  <div class="mod-block">
+    <h3>Envelope encryption, step by step</h3>
+    <ol class="steps">
+      <li><code>GenerateDataKey</code> with your KMS key → a plaintext data key + the same key encrypted.</li>
+      <li>Encrypt the data locally with the plaintext key.</li>
+      <li>Discard the plaintext key; store the ciphertext together with the encrypted data key.</li>
+      <li>To read: KMS <code>Decrypt</code> the data key, then decrypt the data locally.</li>
+    </ol>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>KMS <code>Encrypt</code> takes at most 4,096 bytes.</strong> 750 KB, 1 MB, 5 MB, 111 GB → GenerateDataKey. A unique key per file → one data key per file. <span class="ids">E2a1-Q58 · P2a1-Q25 · E4a1-Q38 · P3a1-Q53 · E2a2-Q3</span></li>
+      <li><strong>Tiny (≤ 4 KB) secrets on a store with no KMS integration, “safest” → Encrypt directly with a customer managed key.</strong> The key never leaves KMS. <span class="trap">envelope encryption on both attempts.</span> <span class="ids">E2a1-Q9 · E2a2-Q64</span></li>
+      <li><strong>KMS ThrottlingException → data key caching in the AWS Encryption SDK + a quota increase</strong>, with backoff and retry. S3 Bucket Keys only reduce KMS calls made by S3 for SSE-KMS objects, not your app's calls. <span class="ids">E1a1-Q15 · E1a3-Q2 · E1a1-Q45</span></li>
+      <li><strong>KMS stores the key; your data goes to KMS and comes back encrypted.</strong> Rotation: enable automatic rotation on a customer managed symmetric key (default yearly, 90–2,560 days configurable). SSE-C has no AWS rotation. <span class="ids">P1a2-Q41 · P4a2-Q46</span></li>
+      <li><strong>Enforce encryption on upload with a bucket policy:</strong> Deny <code>s3:PutObject</code> when <code>s3:x-amz-server-side-encryption</code> is <code>StringNotEquals</code> the required value (<code>AES256</code> or <code>aws:kms</code>). Enabling default encryption sets a fallback; it doesn't enforce a type. <span class="trap"><code>sse:s3</code> twice, “enable SSE-S3” twice, a Deny on GetObject with <code>aws:AES256</code> twice.</span> <span class="ids">E1a1-Q13 · E1a3-Q36 · E2a1-Q48 · E2a2-Q63 · E3a1-Q34 · P1a1-Q30</span></li>
+      <li><strong>PutObject AccessDenied on an SSE-KMS bucket → add <code>kms:GenerateDataKey</code></strong> (and <code>kms:Decrypt</code> for downloads and multipart uploads). <span class="trap">“fix the bucket policy” three times in two banks.</span> <span class="ids">E1a1-Q22 · E1a3-Q35 · P3a1-Q59</span></li>
+      <li><strong>Upload header for SSE-KMS is <code>aws:kms</code>;</strong> for SSE-S3 it is <code>AES256</code>. Full control of keys inside AWS → SSE-KMS with a customer managed key. Encryption in transit → Deny when <code>aws:SecureTransport</code> is false. <span class="ids">P4a1-Q55 · P3a1-Q6 · E4a1-Q58</span></li>
+      <li><strong>Other spots:</strong> EBS encrypts at rest, in transit to the instance, and in snapshots. Existing CloudWatch log group → <code>aws logs associate-kms-key</code>. Reading a key policy: an Allow for <code>GenerateDataKeyWithoutPlaintext</code> + <code>Decrypt</code> lets that role create and unwrap data keys; <code>CreateGrant</code> limited by <code>kms:ViaService</code> = EC2 lets it grant EC2 use of the key. <span class="ids">P3a1-Q22 · P4a2-Q20 · P2a1-Q31</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: COGNITO ================= -->
+<section id="m-cognito" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 15 misses · 6 of 8 tests</p>
+    <h2>Cognito</h2>
+    <p>Twelve of fifteen misses are the user pool vs identity pool split. Ask one question: does the scenario need a login, or AWS credentials?</p>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th></th><th>User pool</th><th>Identity pool</th></tr></thead>
+      <tbody>
+        <tr><td><b>Job</b></td><td>Sign-up and sign-in directory</td><td>Hands out temporary AWS credentials</td></tr>
+        <tr><td><b>Gives you</b></td><td>JWTs: ID, access and refresh tokens</td><td>STS credentials for an IAM role</td></tr>
+        <tr><td><b>Who</b></td><td>Its own users, plus SAML, OIDC and social sign-in</td><td>User-pool users, SAML, OIDC, social — or guests via an unauthenticated role</td></tr>
+        <tr><td><b>Plugs into</b></td><td>ALB authenticate action, API Gateway Cognito authorizer, your app's login</td><td>Client calls straight to S3, DynamoDB and other services</td></tr>
+        <tr><td><b>Extras</b></td><td>MFA, password policy, Lambda triggers, threat protection (adaptive authentication, Plus plan)</td><td>Authenticated vs unauthenticated roles, role selection by claims</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Offload login from EC2 behind an ALB → ALB authenticate action with a user pool.</strong> <span class="trap">identity pools, on CloudFront then on the ALB.</span> <span class="ids">E2a1-Q18 · E2a2-Q6</span></li>
+      <li><strong>Block or challenge risky sign-ins automatically → adaptive authentication</strong> (part of threat protection, formerly “advanced security features”). MFA alone is a fixed second factor with no risk scoring. <span class="trap">MFA on both attempts.</span> <span class="ids">E2a1-Q11 · E2a2-Q32</span></li>
+      <li><strong>Guests and registered users with different S3 access → identity pool with unauthenticated and authenticated roles</strong> (the other keyed answer: let the app assume a different role per user type). <span class="ids">E2a1-Q31 · E2a2-Q57 · E4a1-Q23</span></li>
+      <li><strong>SAML or social sign-in + direct S3/DynamoDB access → identity pool.</strong> Third-party partner users writing to DynamoDB → identity pool. One identity per mobile device, no keys on the device → identity pool. <span class="ids">E2a1-Q8 · P2a1-Q63 · P4a1-Q11</span></li>
+      <li><strong>JWT handling, sign-up, user management, MFA at login → user pool.</strong> API Gateway access for registered users → Cognito user pool authorizer (“API Gateway User Pools” doesn't exist). <span class="ids">P1a2-Q14 · P2a1-Q52 · P2a1-Q60 · P3a1-Q34 · P3a1-Q42</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: API GATEWAY ================= -->
+<section id="m-apigw" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 15 misses · 8 of 8 tests</p>
+    <h2>API Gateway &amp; AppSync</h2>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Authorization options: IAM (SigV4), Cognito user pool authorizer, Lambda authorizer.</strong> Custom headers checked against your own table or a third-party token → Lambda authorizer. STS is not an API Gateway auth option. <span class="ids">E1a3-Q5 · P1a2-Q49 · P2a1-Q2</span></li>
+      <li><strong>Changes don't show up → redeploy to a stage.</strong> Stage variables let each stage point at a different backend or Lambda alias. <span class="ids">P2a1-Q21 · E4a1-Q20</span></li>
+      <li><strong>New API key gets 403 while old keys work → add it to the usage plan</strong> (<code>CreateUsagePlanKey</code>). <span class="ids">E3a1-Q32</span></li>
+      <li><strong>Access logs = who called and how; execution logs = errors and authorizer/integration traces.</strong> “Detailed CloudWatch logging” and “server access logging” are distractors. <span class="ids">E2a1-Q22 · E2a2-Q26</span></li>
+      <li><strong>Read-heavy, rarely-changing responses → enable stage caching.</strong> A client forces a fresh response with the header <code>Cache-Control: max-age=0</code> (caller needs <code>execute-api:InvalidateCache</code>). <span class="ids">P1a1-Q21 · P4a1-Q8</span></li>
+      <li><strong>Integration types: AWS, AWS_PROXY, HTTP, HTTP_PROXY, MOCK.</strong> Simulate APIs owned by other teams → MOCK. <span class="ids">P3a1-Q48</span></li>
+      <li><strong>Custom domain with a third-party certificate → import it into ACM</strong> (same Region for a Regional API, us-east-1 for edge-optimized), map the domain, create a Route 53 alias record. <span class="ids">E4a1-Q55</span></li>
+      <li><strong>Stage variable calling Lambda returns 500 → add a resource-based policy on the function</strong> allowing API Gateway to invoke it. <span class="ids">E2a2-Q50</span></li>
+      <li><strong>One endpoint, one request, data from DynamoDB and Lambda together → AppSync (GraphQL).</strong> Browser calls from unwanted domains → CORS (see the caveat below). <span class="ids">E4a1-Q13 · P3a1-Q47</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: MESSAGING ================= -->
+<section id="m-messaging" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 27 misses · 8 of 8 tests</p>
+    <h2>SQS, SNS, Kinesis &amp; event triggers</h2>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>SQS knob</th><th>What it does</th><th>Range</th><th>Your misses</th></tr></thead>
+      <tbody>
+        <tr><td><code>VisibilityTimeout</code> / <code>ChangeMessageVisibility</code></td><td>Hides a received message from other consumers; extend one message when work runs long</td><td>0 s–12 h, default 30 s</td><td class="ids">E1a1-Q20 · E1a3-Q25</td></tr>
+        <tr><td><code>DelaySeconds</code> (delay queue)</td><td>Postpones delivery of new messages; per-message delay on standard queues only</td><td>0–15 min</td><td class="ids">P2a1-Q48</td></tr>
+        <tr><td><code>ReceiveMessageWaitTimeSeconds</code> / <code>WaitTimeSeconds</code></td><td>Long polling: waits for messages instead of returning empty; cheaper and quicker for sparse traffic</td><td>1–20 s (0 = short polling)</td><td class="ids">E1a1-Q60 · E3a1-Q48 · E4a1-Q5</td></tr>
+        <tr><td><code>MessageRetentionPeriod</code></td><td>How long unconsumed messages are kept</td><td>60 s–14 days, default 4 days</td><td class="ids">P1a1-Q14</td></tr>
+        <tr><td>Dead-letter queue</td><td>Parks messages that keep failing (maxReceiveCount)</td><td>Same type as the source queue</td><td class="ids">P1a2-Q40</td></tr>
+        <tr><td><code>MessageDeduplicationId</code></td><td>FIFO token that drops duplicates (ContentBasedDeduplication = queue setting that hashes the body for you; MessageGroupId = ordering scope)</td><td>5-minute window</td><td class="ids">E2a1-Q32</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>SQS scales by itself.</strong> No capacity to pre-provision, unlimited messages per queue, about 120,000 in flight on a standard queue, queue type fixed at creation. Max message 1 MiB since Aug 2025 (older material says 256 KB); bigger payloads via the Extended Client Library and S3. <span class="ids">P3a1-Q52 · P2a1-Q38 · P1a1-Q14 · P4a1-Q37</span></li>
+      <li><strong>Scale consumers on backlog per instance</strong> (ApproximateNumberOfMessagesVisible ÷ instances) with a target tracking policy. <span class="ids">P1a1-Q45</span></li>
+      <li><strong>One SNS topic + subscription filter policies</strong> so each partner gets only its own messages; new partners need only a new subscription. <span class="trap">a separate topic per partner, three times in two banks.</span> <span class="ids">E1a1-Q25 · E1a3-Q47 · P2a1-Q54</span></li>
+      <li><strong>Fan-out with retries and no provisioning → SNS → several SQS queues.</strong> Each consumer gets a durable copy it can reprocess. <span class="ids">E1a1-Q42 · E4a1-Q56</span></li>
+      <li><strong>Kinesis shard = 1 MB/s or 1,000 records/s in, 2 MB/s out.</strong> ProvisionedThroughputExceeded → retry with exponential backoff, reduce request rate or size, add shards (split). <span class="trap">“merge shards” on both attempts; that removes capacity.</span> <span class="ids">E1a1-Q34 · E1a3-Q53 · E1a1-Q61 · P2a1-Q24</span></li>
+      <li><strong>Throttled at 3 of 10 MB/s → the partition key isn't spread across shards.</strong> <span class="ids">P4a1-Q7</span></li>
+      <li><strong>Same ordered records read by several apps, replay days later → Kinesis Data Streams</strong> (retention 24 h by default, up to 365 days). SQS deletes what it delivers. <span class="ids">P3a1-Q19 · E2a2-Q22</span></li>
+      <li><strong>Log files on EC2 into Kinesis → Kinesis Agent.</strong> <span class="ids">P4a1-Q25</span></li>
+      <li><strong>React to CodePipeline state changes → EventBridge rule targeting Lambda.</strong> New S3 object → S3 event notification invokes Lambda. Multi-step workflow with state, retries and error handling → Step Functions, not a queue. <span class="ids">E4a1-Q22 · P4a2-Q50 · E1a1-Q12</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: CACHING & RDS ================= -->
+<section id="m-caching" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 21 misses · 7 of 8 tests</p>
+    <h2>Caching, sessions &amp; RDS</h2>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Session data must survive an instance failure or a blue/green swap → ElastiCache (Redis/Valkey) or DynamoDB.</strong> <span class="trap">a dedicated EC2 instance twice, sticky sessions twice.</span> <span class="ids">E2a1-Q56 · E2a2-Q48 · E3a1-Q10 · P4a1-Q51</span></li>
+      <li><strong>Read-heavy RDS, keep SQL, least refactoring now and later → read replicas.</strong> A cache needs new caching code. <span class="trap">ElastiCache for Redis three times.</span> <span class="ids">E2a1-Q23 · P1a1-Q48 · P1a2-Q47</span></li>
+      <li><strong>Highly available cache → Redis/Valkey with replicas</strong>; cluster mode enabled adds sharding (horizontal scale) and suits geospatial queries. Memcached is multi-threaded but has no replication or failover. CloudFront doesn't cache RDS query results. <span class="ids">E3a1-Q58 · E4a1-Q21</span></li>
+      <li><strong>Data that must never be stale:</strong> write to the database, then invalidate (or update) the cache. Lazy loading with a TTL tolerates staleness. ElastiCache fits read-heavy and compute-intensive results, not write-heavy or ETL workloads. <span class="ids">E4a1-Q2 · P3a1-Q28</span></li>
+      <li><strong>Redis replication facts (lower yield):</strong> all nodes in one Region; replicas add read capacity, not write; with cluster mode enabled you can't manually promote a replica. <span class="ids">P4a1-Q38 · P4a2-Q55</span></li>
+      <li><strong>Lambda + RDS “connection limit exceeded” → RDS Proxy.</strong> <span class="trap">“auto-scale RDS on connection count” on both attempts; no such feature.</span> <span class="ids">E1a1-Q3 · E1a3-Q44</span></li>
+      <li><strong>Multi-AZ DB instance:</strong> synchronous replication, automatic failover, standby not readable; maintenance patches the standby, promotes it, then patches the old primary. <span class="trap">“asynchronous replication”.</span> <span class="ids">E3a1-Q5</span></li>
+      <li><strong>Running out of storage → enable storage autoscaling</strong> (no migration). <strong>Backups beyond 35 days → scheduled manual snapshots</strong> (EventBridge Scheduler + Lambda, or AWS Backup). <strong>DR → cross-Region read replica + automated backups.</strong> <span class="ids">E4a1-Q1 · E4a1-Q36 · P3a1-Q27</span></li>
+      <li><strong>IAM database authentication: MySQL, MariaDB, PostgreSQL</strong> (tokens last 15 minutes). Not SQL Server, Oracle or Db2. <span class="ids">P3a1-Q45</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: NETWORK ================= -->
+<section id="m-network" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 19 misses · 6 of 8 tests</p>
+    <h2>Load balancing &amp; networking</h2>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Targets unhealthy but the site loads by IP:</strong> (1) the instances' security group doesn't allow the ALB's security group on the health-check port; (2) the health-check path or port is wrong. <span class="trap">you found cause (1) each time; the second pick was Elastic IP, “unsupported runtime”, “EBS mounted wrong”.</span> <span class="ids">E1a1-Q10 · E1a3-Q58 · P1a2-Q43</span></li>
+      <li><strong>Security groups are stateful; NACLs are stateless.</strong> A custom NACL needs an outbound rule for ephemeral ports 1024–65535 (load balancers, NAT gateways and Lambda use that range; Linux clients use 32768–61000). Security groups need no outbound rule for replies. <span class="ids">E1a1-Q24 · E1a1-Q55 · P1a1-Q24</span></li>
+      <li><strong>Cross-zone:</strong> ALB on by default (can be turned off per target group); NLB and GWLB off; CLB on when created in the console, off via API/CLI. 2 instances in one AZ and 8 in another: with cross-zone each gets 10%; without, the 2 get 25% each and the 8 get 6.25% each. <span class="ids">P1a1-Q13</span></li>
+      <li><strong>Uneven traffic:</strong> sticky sessions, or instance capacity types spread unevenly across AZs. <span class="trap">“ALB cross-zone is disabled by default”; it's on.</span> <span class="ids">E1a1-Q32</span></li>
+      <li><strong>Per-request client IP and latency → ALB access logs</strong> (stored in S3). In the app, the client IP arrives in <code>X-Forwarded-For</code>. Source IP and port with no headers, millions of connections → NLB. <span class="ids">E4a1-Q8 · P1a2-Q61 · P3a1-Q12 · P4a1-Q5</span></li>
+      <li><strong>Offload HTTPS CPU → ACM certificate on an ALB HTTPS listener</strong> (TLS terminates at the ALB). An ALB can't pass TLS through. <span class="ids">E4a1-Q7</span></li>
+      <li><strong>ALB targets: instance, IP, Lambda.</strong> IP targets can't be publicly routable; instance-ID targets receive traffic on the primary private IP of the primary interface. <span class="trap">you swapped the instance and IP routing rules on both attempts.</span> <span class="ids">P4a1-Q10 · P4a2-Q43</span></li>
+      <li><strong>A load balancer is Regional:</strong> it gives high availability across AZs and separates public traffic from private instances, but it doesn't span Regions. ALB + ECS dynamic port mapping runs many tasks of one service per instance. <span class="ids">P1a1-Q51 · P1a2-Q2 · P2a1-Q49</span></li>
+      <li><strong>Route 53:</strong> CNAME for a third-party hostname (not at the zone apex); alias records for AWS targets such as CloudFront, ELB and API Gateway, apex included. <span class="ids">P1a2-Q22</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: CLOUDFRONT ================= -->
+<section id="m-cloudfront" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 13 misses · 7 of 8 tests</p>
+    <h2>CloudFront &amp; edge</h2>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Public login page, everything else private → add a cache behavior with a specific path pattern</strong> (the login path) and unrestricted viewer access; leave the default behavior alone. <span class="ids">E1a1-Q4</span></li>
+      <li><strong>Old content after a pipeline deploy → <code>CreateInvalidation</code> for the changed paths</strong> (or versioned file names). Versioning the S3 bucket changes nothing at the edge. <span class="ids">E1a1-Q37</span></li>
+      <li><strong>Faster for global users with least effort → CloudFront in front of the ALB.</strong> S3 Transfer Acceleration speeds long-distance transfers to and from one bucket but caches nothing; Global Accelerator improves routing without caching. <span class="ids">E1a3-Q3 · P4a1-Q54</span></li>
+      <li><strong>Logic only on cache misses, or that must call AWS services → Lambda@Edge.</strong> Redirect decommissioned pages with fewest invocations → origin response (runs only when the origin answered, e.g. a 404). <span class="ids">E2a1-Q51 · E2a2-Q33 · E1a3-Q52 · E3a1-Q25</span></li>
+      <li><strong>Origin failover:</strong> an origin group with primary and secondary; every request tries the primary first; failover only for GET, HEAD and OPTIONS on configured errors; cache hits never reach an origin. <span class="ids">E4a1-Q41</span></li>
+      <li><strong>One restricted file → signed URL; many files → signed cookies; direct S3 access for a paying user → S3 presigned URL.</strong> WAF and field-level encryption don't grant access to one file. <span class="ids">E3a1-Q36 · E4a1-Q19</span></li>
+      <li><strong>Signers:</strong> CloudFront key pairs can only be created by the root user (max 2 active per account); trusted key groups are the recommended signer. The private key signs, CloudFront holds the public key. <span class="trap">“IAM user access keys” on both attempts.</span> <span class="ids">P1a1-Q38 · P1a2-Q11 · P2a1-Q65</span></li>
+      <li><strong>HTTPS end to end:</strong> viewer protocol policy (viewer ↔ CloudFront) and origin protocol policy (CloudFront ↔ origin). For S3 origins, origin access control (OAC) is the current replacement for OAI. <span class="ids">P4a1-Q47</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: OBSERVABILITY ================= -->
+<section id="m-observability" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 21 misses · 8 of 8 tests</p>
+    <h2>X-Ray &amp; CloudWatch</h2>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Instrumented but no traces at all → permissions first</strong> (<code>xray:PutTraceSegments</code>, <code>xray:PutTelemetryRecords</code> on the execution, instance or task role), then the daemon, then Lambda active tracing. Security groups and sampling aren't the cause. <span class="ids">E2a1-Q17 · P2a1-Q40</span></li>
+      <li><strong>ECS or Fargate → run the X-Ray daemon as its own container (sidecar) and give the task role the permissions.</strong> Not a process on the host, not the instance role. <span class="ids">E2a1-Q45 · E2a2-Q17 · E3a1-Q63</span></li>
+      <li><strong>“Which does NOT help debug missing data”: sampling.</strong> The instance role, the daemon and CloudTrail (API denials) all help. <span class="trap">CloudTrail, three times.</span> <span class="ids">E4a1-Q16 · P1a1-Q18 · P1a2-Q30</span></li>
+      <li><strong>Trace requests across accounts into one view → X-Ray.</strong> CloudTrail records API calls (who did what); CloudWatch holds metrics, logs and alarms; EventBridge routes events. <span class="ids">E3a1-Q16 · P1a1-Q43</span></li>
+      <li><strong>RAM, disk or app values aren't default EC2 metrics → publish a custom metric</strong> with <code>PutMetricData</code> (or the CloudWatch agent) and alarm on it. Detailed monitoring only shortens the period from 5 min to 1 min. <span class="ids">E3a1-Q35 · P4a1-Q64 · P4a1-Q41</span></li>
+      <li><strong>Near real-time alert on an external API's error rate → high-resolution custom metric + CloudWatch alarm → SNS.</strong> Not a Lambda polling Logs Insights. <span class="ids">E1a1-Q48</span></li>
+      <li><strong>Mask PII in logs → CloudWatch Logs data protection policy</strong> (managed data identifiers). On-premises servers → CloudWatch agent with IAM user credentials. Logs to S3 → export task (or a subscription to Firehose). <span class="ids">E2a1-Q16 · E3a1-Q51 · P4a1-Q60</span></li>
+      <li><strong>Enable detailed monitoring on running instances:</strong> <code>aws ec2 monitor-instances --instance-ids i-…</code>. (<code>run-instances --monitoring Enabled=true</code> launches a new instance.) <span class="ids">P3a1-Q15</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: CI/CD & IaC ================= -->
+<section id="m-cicd" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 24 misses · 6 of 8 tests</p>
+    <h2>CI/CD &amp; infrastructure as code</h2>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Start the pipeline on every change:</strong> source in S3 (EventBridge change detection) or a Git repository push. Not EFS, not EBS, not a 15-minute schedule. <span class="ids">E2a1-Q13 · E2a2-Q16</span></li>
+      <li><strong>CodeBuild:</strong> <code>buildspec.yml</code> at the repo root; scales and runs builds in parallel on its own; cache dependencies in S3 or local cache; its service role needs S3 write access to store artifacts. <span class="ids">P3a1-Q32 · P4a1-Q44 · P4a2-Q29</span></li>
+      <li><strong>CodeCommit:</strong> Git credentials, SSH keys, or access keys through the credential helper; never an IAM username and password. Repositories are encrypted at rest automatically and in transit over HTTPS/SSH. <span class="ids">P1a2-Q55 · P4a1-Q24</span></li>
+      <li><strong>Static sites from several Git branches, HTTPS, least overhead → Amplify Hosting.</strong> <span class="ids">E3a1-Q65</span></li>
+      <li><strong>Template sections:</strong> AWSTemplateFormatVersion, Description, Metadata, Parameters, Rules, Mappings, Conditions, Transform, Resources (the only required one), Outputs. No “Dependencies”. Conditions attach to resources and outputs, never parameters. <span class="ids">P1a1-Q64 · P1a2-Q29 · P1a1-Q6</span></li>
+      <li><strong>Syntax:</strong> <code>!FindInMap [MapName, TopLevelKey, SecondLevelKey]</code>; current Region = <code>AWS::Region</code> pseudo parameter; share a value → <code>Export</code> in Outputs + <code>Fn::ImportValue</code> in the consumer. <span class="ids">P1a1-Q31 · P4a1-Q2 · P4a1-Q46</span></li>
+      <li><strong>Lifecycle:</strong> delete stacks that import values before the stack that exports them; DELETE_FAILED → retain the resource (DeletionPolicy: Retain or retain on delete) and remove it by hand; same stack in many Regions or accounts → StackSets (<code>create-stack-set</code>). <span class="ids">P2a1-Q18 · E2a1-Q63 · E2a1-Q37 · E2a2-Q34</span></li>
+      <li><strong>Deploy local code with a template:</strong> <code>aws cloudformation package</code> (uploads artifacts to S3, rewrites the template) then <code>deploy</code>. <span class="ids">P4a1-Q40</span></li>
+      <li><strong>SAM:</strong> the <code>Transform: AWS::Serverless-2016-10-31</code> line is mandatory; resource types include Function, Api, HttpApi, SimpleTable, LayerVersion, Application, StateMachine, Connector and GraphQLApi, but no UserPool; <code>sam sync</code> pushes incremental changes fast, <code>sam deploy</code> runs a full CloudFormation deployment. SAM and Elastic Beanstalk both provision through CloudFormation. <span class="ids">P2a1-Q7 · P1a1-Q56 · E3a1-Q60 · P3a1-Q44</span></li>
+      <li><strong>Infrastructure in Python, .NET, JavaScript and more → AWS CDK</strong> (synthesizes CloudFormation). Ready-made serverless apps → Serverless Application Repository. <span class="ids">E2a1-Q25 · P1a2-Q5</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= MODULE: OTHER ================= -->
+<section id="m-other" class="module">
+  <div class="mod-head">
+    <p class="eyebrow">Topic · 30 misses · 8 of 8 tests</p>
+    <h2>Smaller topics</h2>
+    <p>Step Functions, configuration, S3 access and EC2 basics. Fourteen of these misses are EC2, Auto Scaling and billing trivia from the practice tests that sits mostly outside the DVA-C02 guide, so skim that part.</p>
+  </div>
+  <div class="mod-block">
+    <h3>Rules</h3>
+    <ul class="rules">
+      <li><strong>Step Functions:</strong> a Task state is one unit of work; parallel tasks and decisions → a state machine (not “activities”); keep the input and add the error → <code>ResultPath</code> in a Catch. <span class="ids">P2a1-Q62 · P3a1-Q26 · E2a1-Q50</span></li>
+      <li><strong>Config and secrets outside the code, per environment, no redeploy → Parameter Store with hierarchical paths</strong> (<code>/prod/app/api-url</code>). Encrypted string with simple API calls and audit → SecureString + CloudTrail. AppConfig, also in the exam guide, adds validated, staged config rollouts. <span class="ids">E3a1-Q9 · E4a1-Q57 · P4a1-Q42</span></li>
+      <li><strong>S3 access:</strong> paid download from a private bucket → presigned URL; assets from another bucket blocked in the browser → CORS on the bucket that serves the asset; bucket owner owns every object → Object Ownership “bucket owner enforced”; files shared by an Auto Scaling group → S3; bucket grows after enabling access logs → it is logging into itself. <span class="ids">E4a1-Q19 · P3a1-Q38 · P4a1-Q26 · P3a1-Q21 · P4a1-Q36 · P2a1-Q59</span></li>
+      <li><strong>EC2 basics:</strong> user data runs as root, once, at first boot; an Auto Scaling group spans AZs in one Region, works with ALB and NLB, replaces unhealthy instances, and can't grow a running instance's volume; gp2 reaches 16,000 IOPS at 5,334 GiB; Dedicated Instances are cheaper than Dedicated Hosts for single tenancy; shared, rarely read files for many instances → EFS Infrequent Access. <span class="ids">P1a1-Q12 · P1a2-Q26 · P1a1-Q23 · P1a2-Q13 · E4a1-Q48 · P2a1-Q56 · P2a1-Q42 · P1a1-Q55 · E3a1-Q27</span></li>
+      <li><strong>Billing trivia (outside the DVA-C02 guide):</strong> IAM users see the Billing console only after the root user activates IAM access; Budgets forecasts need about five weeks of data; the “0 seconds for a t2.micro” answer relies on the legacy Free Tier. <span class="ids">P1a1-Q20 · P1a2-Q37 · P1a1-Q58 · P1a1-Q2</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= NUMBERS ================= -->
+<section id="numbers">
+  <div class="sec-head">
+    <p class="eyebrow">Reference</p>
+    <h2>Numbers to know</h2>
+    <p>Every figure checked against AWS documentation on 1 November 2026.</p>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Area</th><th>Numbers</th></tr></thead>
+      <tbody>
+        <tr><td><b>The exam</b></td><td>65 questions (50 scored + 15 unscored) · 130 minutes · pass 720 / 1,000 · domains 32 / 26 / 24 / 18% · last DVA-C02 sitting 30 Nov 2026</td></tr>
+        <tr><td><b>Lambda</b></td><td>Memory 128–10,240 MB (≈ 1 vCPU at 1,769 MB) · timeout 900 s · environment variables 4 KB total · ZIP 50 MB upload, 250 MB unzipped incl. layers · container image 10 GB · <code>/tmp</code> 512–10,240 MB · 1,000 concurrent executions per Region by default · synchronous payload 6 MB</td></tr>
+        <tr><td><b>DynamoDB</b></td><td>Read unit = 4 KB (strong 1 · eventual ½ · transactional 2) · write unit = 1 KB (standard 1 · transactional 2) · item max 400 KB · BatchWriteItem 25 · BatchGetItem 100 items / 16 MB · TransactWriteItems 100 actions / 4 MB · idempotency token valid 10 min</td></tr>
+        <tr><td><b>SQS</b></td><td>Message 1 MiB (since Aug 2025; 256 KiB before) · visibility timeout 30 s default, 12 h max · delay 0–15 min · long poll ≤ 20 s · retention 60 s–14 days, default 4 days · unlimited messages per queue · ≈ 120,000 in flight (standard) · FIFO dedup window 5 min</td></tr>
+        <tr><td><b>Kinesis Data Streams</b></td><td>Per shard: 1 MB/s or 1,000 records/s in · 2 MB/s out · retention 24 h, extendable to 365 days</td></tr>
+        <tr><td><b>KMS</b></td><td>Encrypt plaintext ≤ 4,096 bytes · automatic rotation yearly by default, configurable 90–2,560 days</td></tr>
+        <tr><td><b>RDS</b></td><td>Automated backup retention ≤ 35 days · IAM auth tokens valid 15 min</td></tr>
+        <tr><td><b>CloudWatch</b></td><td>EC2 basic monitoring 5 min · detailed 1 min · high-resolution custom metrics down to 1 s</td></tr>
+        <tr><td><b>VPC &amp; ELB</b></td><td>Ephemeral ports: ELB, NAT gateway and Lambda 1024–65535, Linux 32768–61000 · cross-zone: ALB on, NLB/GWLB off, CLB console on / API off</td></tr>
+        <tr><td><b>CloudFront</b></td><td>Root user: up to 2 active CloudFront key pairs · trusted key groups: up to 4 per distribution, 5 public keys each</td></tr>
+        <tr><td><b>EBS gp2</b></td><td>3 IOPS per GiB · 16,000 IOPS max, reached at 5,334 GiB</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= REPEATS ================= -->
+<section id="repeats">
+  <div class="sec-head">
+    <p class="eyebrow">Reference</p>
+    <h2>Repeat misses</h2>
+    <p>The 43 questions you got wrong on both attempts. <span class="chip bad">same pick</span> marks the 28 where you chose the identical wrong option twice. <span class="pick bad"><span class="lbl">You</span></span> = your wrong pick, <span class="pick good"><span class="lbl">Right</span></span> = the keyed answer.</p>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Questions</th><th>What it tested</th><th>Your pick → right answer</th></tr></thead>
+      <tbody>
+        <tr><td class="ids">E1a1-Q9<br>E1a3-Q10</td><td>EB update only on brand-new instances (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">Rolling with additional batch</span><br><span class="pick good">Immutable + blue/green</span></td></tr>
+        <tr><td class="ids">E1a1-Q19<br>E1a3-Q49</td><td>EB full capacity while reusing existing instances</td><td><span class="pick bad">Immutable, then Rolling</span><br><span class="pick good">Rolling with additional batch</span></td></tr>
+        <tr><td class="ids">E1a1-Q38<br>E1a3-Q41</td><td>EB no performance loss, most cost-effective</td><td><span class="pick bad">Rolling, then Immutable</span><br><span class="pick good">Rolling with additional batch</span></td></tr>
+        <tr><td class="ids">E1a1-Q15<br>E1a3-Q2</td><td>KMS ThrottlingException (pick 2)</td><td><span class="pick bad">Call Encrypt directly; then queue requests in SQS</span><br><span class="pick good">Data key caching + quota increase</span></td></tr>
+        <tr><td class="ids">E1a1-Q56<br>E1a3-Q61</td><td>All-or-nothing credit transfer (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">ConsistentRead=true</span><br><span class="pick good">RDS transaction block + DynamoDB transactions</span></td></tr>
+        <tr><td class="ids">E1a1-Q22<br>E1a3-Q35</td><td>PutObject AccessDenied on an SSE-KMS bucket <span class="chip bad">same pick</span></td><td><span class="pick bad">Fix the bucket policy</span><br><span class="pick good">Allow kms:GenerateDataKey</span></td></tr>
+        <tr><td class="ids">E1a1-Q34<br>E1a3-Q53</td><td>Kinesis PutRecords throughput errors (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">Merge shards</span><br><span class="pick good">Backoff and retry + smaller/fewer requests</span></td></tr>
+        <tr><td class="ids">E1a1-Q3<br>E1a3-Q44</td><td>Lambda → RDS “connection limit exceeded” <span class="chip bad">same pick</span></td><td><span class="pick bad">RDS auto-scaling on connection count</span><br><span class="pick good">RDS Proxy</span></td></tr>
+        <tr><td class="ids">E1a1-Q13<br>E1a3-Q36</td><td>Enforce SSE-S3 on every upload <span class="chip bad">same pick</span></td><td><span class="pick bad">Header value sse:s3</span><br><span class="pick good">AES256 + Deny policy</span></td></tr>
+        <tr><td class="ids">E1a1-Q25<br>E1a3-Q47</td><td>Notify each partner only about its orders <span class="chip bad">same pick</span></td><td><span class="pick bad">One SNS topic per partner</span><br><span class="pick good">One topic + filter policies</span></td></tr>
+        <tr><td class="ids">E1a1-Q10<br>E1a3-Q58</td><td>All targets unhealthy, site works by IP (pick 2)</td><td><span class="pick bad">Elastic IP; then “unsupported runtime”</span><br><span class="pick good">SG from the ALB + health-check path</span></td></tr>
+        <tr><td class="ids">E1a1-Q20<br>E1a3-Q25</td><td>Slow job picked up by a second consumer <span class="chip bad">same pick</span></td><td><span class="pick bad">WaitTimeSeconds long polling</span><br><span class="pick good">ChangeMessageVisibility</span></td></tr>
+        <tr><td class="ids">E2a1-Q47<br>E2a2-Q9</td><td>4.5 KB items, 20 eventual reads/s, 12 writes/s <span class="chip bad">same pick</span></td><td><span class="pick bad">40 RCU / 60 WCU</span><br><span class="pick good">20 RCU / 60 WCU</span></td></tr>
+        <tr><td class="ids">E2a1-Q56<br>E2a2-Q48</td><td>Session data that survives instance failure <span class="chip bad">same pick</span></td><td><span class="pick bad">A dedicated EC2 instance</span><br><span class="pick good">ElastiCache for Redis</span></td></tr>
+        <tr><td class="ids">E2a1-Q11<br>E2a2-Q32</td><td>Block high-risk sign-ins automatically <span class="chip bad">same pick</span></td><td><span class="pick bad">MFA</span><br><span class="pick good">Adaptive authentication</span></td></tr>
+        <tr><td class="ids">E2a1-Q26<br>E2a2-Q30</td><td>ECS app using long-lived keys <span class="chip bad">same pick</span></td><td><span class="pick bad">Credentials file with new keys</span><br><span class="pick good">ECS task IAM role</span></td></tr>
+        <tr><td class="ids">E2a1-Q28<br>E2a2-Q19</td><td>Role narrowed, app still writes to every bucket</td><td><span class="pick bad">Managed policy; then inline policy</span><br><span class="pick good">Env-var keys win; instance profile is checked last</span></td></tr>
+        <tr><td class="ids">E2a1-Q48<br>E2a2-Q63</td><td>Guarantee no unencrypted uploads <span class="chip bad">same pick</span></td><td><span class="pick bad">Enable SSE-S3 default encryption</span><br><span class="pick good">Deny Put without the encryption header</span></td></tr>
+        <tr><td class="ids">E2a1-Q9<br>E2a2-Q64</td><td>1 KB PII files on non-AWS storage, safest <span class="chip bad">same pick</span></td><td><span class="pick bad">Envelope encryption with a data key</span><br><span class="pick good">Encrypt directly with a customer managed key</span></td></tr>
+        <tr><td class="ids">E2a1-Q31<br>E2a2-Q57</td><td>Guests and registered users reading S3 (pick 2)</td><td><span class="pick bad">Access keys in code; then bucket policies per IAM user</span><br><span class="pick good">Cognito auth/unauth roles + a role per user type</span></td></tr>
+        <tr><td class="ids">E2a1-Q22<br>E2a2-Q26</td><td>Log who called the API + authorizer errors (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">“Detailed CloudWatch logging”</span><br><span class="pick good">Access logs + execution logs</span></td></tr>
+        <tr><td class="ids">E2a1-Q45<br>E2a2-Q17</td><td>X-Ray daemon with Fargate (pick 2)</td><td><span class="pick bad">Daemon set; then host process + instance role</span><br><span class="pick good">Sidecar container + task role</span></td></tr>
+        <tr><td class="ids">E2a1-Q6<br>E2a2-Q1</td><td>Faster nightly scan without hurting production (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">Increase RCUs during the scan</span><br><span class="pick good">Parallel Scan + Limit</span></td></tr>
+        <tr><td class="ids">E2a1-Q13<br>E2a2-Q16</td><td>Start the pipeline on every code change (pick 2)</td><td><span class="pick bad">EFS; then EBS</span><br><span class="pick good">S3 source + CodeCommit push</span></td></tr>
+        <tr><td class="ids">E2a1-Q57<br>E2a2-Q45</td><td>CodeDeploy: new environment, then re-route traffic <span class="chip bad">same pick</span></td><td><span class="pick bad">Immutable</span><br><span class="pick good">Blue/green</span></td></tr>
+        <tr><td class="ids">E2a1-Q51<br>E2a2-Q33</td><td>Pick the nearest S3 bucket on cache misses only <span class="chip bad">same pick</span></td><td><span class="pick bad">CloudFront Function on origin request</span><br><span class="pick good">Lambda@Edge on origin request</span></td></tr>
+        <tr><td class="ids">E2a1-Q37<br>E2a2-Q34</td><td>Same load-test stack in many Regions</td><td><span class="pick bad">Lambda per Region; then “Organizations template”</span><br><span class="pick good">CloudFormation StackSets</span></td></tr>
+        <tr><td class="ids">E2a1-Q18<br>E2a2-Q6</td><td>Offload sign-in from EC2 behind an ALB</td><td><span class="pick bad">Identity pools (CloudFront, then ALB)</span><br><span class="pick good">Cognito user pools on the ALB</span></td></tr>
+        <tr><td class="ids">P1a1-Q64<br>P1a2-Q29</td><td>Invalid CloudFormation section</td><td><span class="pick bad">Parameters; then Conditions</span><br><span class="pick good">“Dependencies”</span></td></tr>
+        <tr><td class="ids">P1a1-Q23<br>P1a2-Q13</td><td>Auto Scaling statements that are NOT correct (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">Two true statements</span><br><span class="pick good">“Only one AZ” + “spans Regions”</span></td></tr>
+        <tr><td class="ids">P1a1-Q39<br>P1a2-Q31</td><td>Where TLS server certificates are deployed (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">CloudFormation</span><br><span class="pick good">ACM + IAM</span></td></tr>
+        <tr><td class="ids">P1a1-Q51<br>P1a2-Q2</td><td>Why use a load balancer (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">Deploy across Regions</span><br><span class="pick good">High availability + separate public/private traffic</span></td></tr>
+        <tr><td class="ids">P1a1-Q12<br>P1a2-Q26</td><td>EC2 user data defaults (pick 2)</td><td><span class="pick bad">“Update while running”; then “no root”</span><br><span class="pick good">Runs as root, first boot only</span></td></tr>
+        <tr><td class="ids">P1a1-Q38<br>P1a2-Q11</td><td>Credential only the root user can create <span class="chip bad">same pick</span></td><td><span class="pick bad">IAM user access keys</span><br><span class="pick good">CloudFront key pairs</span></td></tr>
+        <tr><td class="ids">P1a1-Q18<br>P1a2-Q30</td><td>What does NOT help debug missing X-Ray data <span class="chip bad">same pick</span></td><td><span class="pick bad">CloudTrail</span><br><span class="pick good">X-Ray sampling</span></td></tr>
+        <tr><td class="ids">P1a1-Q48<br>P1a2-Q47</td><td>Read-heavy PostgreSQL, least refactoring <span class="chip bad">same pick</span></td><td><span class="pick bad">ElastiCache for Redis</span><br><span class="pick good">Read replicas</span></td></tr>
+        <tr><td class="ids">P1a1-Q41<br>P1a2-Q54</td><td>One policy for per-user S3 folders <span class="chip bad">same pick</span></td><td><span class="pick bad">Policy resource</span><br><span class="pick good">Policy variables</span></td></tr>
+        <tr><td class="ids">P1a1-Q20<br>P1a2-Q37</td><td>IAM users can't see the Billing console <span class="chip bad">same pick</span></td><td><span class="pick bad">Create users under Billing</span><br><span class="pick good">Activate IAM access to Billing</span></td></tr>
+        <tr><td class="ids">P1a1-Q19<br>P1a2-Q45</td><td>Catalog with three query patterns <span class="chip bad">same pick</span></td><td><span class="pick bad">Partition key category + GSI on name</span><br><span class="pick good">Partition key name, sort key version + GSI on category</span></td></tr>
+        <tr><td class="ids">P1a1-Q14<br>P1a2-Q40</td><td>CreateQueue facts (pick 2)</td><td><span class="pick bad">Retention = delay; then “standard DLQ may be FIFO”</span><br><span class="pick good">Visibility default 30 s + type fixed at creation</span></td></tr>
+        <tr><td class="ids">P4a1-Q10<br>P4a2-Q43</td><td>ALB target facts (pick 2) <span class="chip bad">same pick</span></td><td><span class="pick bad">“IP targets use the primary private IP”</span><br><span class="pick good">Instance / IP / Lambda + no public IPs</span></td></tr>
+        <tr><td class="ids">P4a1-Q38<br>P4a2-Q55</td><td>ElastiCache for Redis facts (pick 2)</td><td><span class="pick bad">“Sync replication”; then “no data loss without replicas”</span><br><span class="pick good">One Region + no manual promotion (cluster mode)</span></td></tr>
+        <tr><td class="ids">P4a1-Q65<br>P4a2-Q40</td><td>Deployed app gets S3 AccessDenied</td><td><span class="pick bad">CodeDeploy service role; then “CodeDeploy proxy”</span><br><span class="pick good">EC2 instance role permissions</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= CAVEATS ================= -->
+<section id="caveats">
+  <div class="sec-head">
+    <p class="eyebrow">Reference</p>
+    <h2>Answer-key caveats</h2>
+    <p>Places where a practice bank's key or explanation is out of date or debatable. The exam answer is usually unchanged; know the current fact so a newer question doesn't surprise you.</p>
+  </div>
+  <div class="tbl-wrap caveats">
+    <table>
+      <thead><tr><th>Bank item</th><th>What's current</th><th>How to answer</th></tr></thead>
+      <tbody>
+        <tr><td><b>SQS size limit</b><br><span class="ids">P4a1-Q37</span></td><td>Max message is 1 MiB since 4 Aug 2025 (was 256 KiB). <a href="https://aws.amazon.com/about-aws/whats-new/2025/08/amazon-sqs-max-payload-size-1mib/" target="_blank" rel="noopener">AWS</a></td><td>Pick 1 MiB if offered; older items assume 256 KB. Larger payloads → Extended Client Library.</td></tr>
+        <tr><td><b>DynamoDB resource policies</b><br><span class="ids">E4a1-Q6</span></td><td>The explanation says DynamoDB has no resource-based policies. It has since March 2024, including cross-account access. <a href="https://aws.amazon.com/about-aws/whats-new/2024/03/amazon-dynamodb-resource-based-policies/" target="_blank" rel="noopener">AWS</a></td><td>AssumeRole is still a keyed answer; don't rule out a table policy as impossible.</td></tr>
+        <tr><td><b>S3 default encryption</b><br><span class="ids">E2a1-Q48 · E2a2-Q63</span></td><td>Since 5 Jan 2023 S3 applies SSE-S3 to every new object and the default can't be removed. <a href="https://aws.amazon.com/about-aws/whats-new/2023/01/amazon-s3-automatically-encrypts-new-objects/" target="_blank" rel="noopener">AWS</a></td><td>“Enforce” or “guarantee” a type → Deny policy on the encryption header.</td></tr>
+        <tr><td><b>RDS backups across Regions</b><br><span class="ids">P3a1-Q27</span></td><td>The explanation says automated backups stay in one Region. RDS can now replicate automated backups to another Region. <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html" target="_blank" rel="noopener">AWS docs</a></td><td>Keyed DR answer stays: cross-Region read replica + automated backups.</td></tr>
+        <tr><td><b>Memcached encryption</b><br><span class="ids">E3a1-Q58</span></td><td>Memcached 1.6.12+ supports in-transit encryption. What it lacks is replication and automatic failover. <a href="https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html" target="_blank" rel="noopener">AWS docs</a></td><td>High-availability cache → Redis/Valkey.</td></tr>
+        <tr><td><b>Cognito naming</b><br><span class="ids">E2a1-Q11 · E2a2-Q32</span></td><td>“Advanced security features” is now <em>threat protection</em>, in the Plus feature plan; adaptive authentication lives there. <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-threat-protection.html" target="_blank" rel="noopener">AWS docs</a></td><td>Either name means the same feature.</td></tr>
+        <tr><td><b>DynamoDB Encryption Client</b><br><span class="ids">E2a1-Q42</span></td><td>Renamed AWS Database Encryption SDK on 9 Jun 2023. <a href="https://docs.aws.amazon.com/database-encryption-sdk/latest/devguide/DDBEC-rename.html" target="_blank" rel="noopener">AWS docs</a></td><td>Either name = client-side encryption.</td></tr>
+        <tr><td><b>CodeCommit</b><br><span class="ids">8 missed questions</span></td><td>Closed to new customers in July 2024, back to general availability on 24 Nov 2025. Not on the current DVA-C02 in-scope list. <a href="https://aws.amazon.com/blogs/devops/aws-codecommit-returns-to-general-availability/" target="_blank" rel="noopener">AWS</a></td><td>Less likely on the exam; credential types and pipeline triggers are still worth knowing.</td></tr>
+        <tr><td><b>X-Ray SDK and daemon</b><br><span class="ids">12 questions</span></td><td>In maintenance mode since 25 Feb 2026; AWS recommends OpenTelemetry for new work. <a href="https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-segment.html" target="_blank" rel="noopener">AWS docs</a></td><td>X-Ray remains in scope; answer with X-Ray concepts.</td></tr>
+        <tr><td><b>Free Tier</b><br><span class="ids">P1a1-Q2</span></td><td>Accounts opened on or after 15 Jul 2025 get credits and a free plan instead of the 12-month t2.micro offer. <a href="https://aws.amazon.com/blogs/aws/aws-free-tier-update-new-customers-can-get-started-and-explore-aws-with-up-to-200-in-credits/" target="_blank" rel="noopener">AWS</a></td><td>Billing isn't in the DVA-C02 guide; low priority.</td></tr>
+        <tr><td><b>CORS as access control</b><br><span class="ids">P3a1-Q47</span></td><td>Browsers enforce CORS; scripts and servers ignore it. Real blocking uses authorizers, resource policies or WAF.</td><td>Among that question's options, CORS is the intended pick.</td></tr>
+        <tr><td><b>“Promote” via stage variable</b><br><span class="ids">E4a1-Q20</span></td><td>Changes to the API definition still need a deployment to the prod stage (or a canary promotion).</td><td>Low-confidence key; prefer redeploying when that option is offered alone.</td></tr>
+        <tr><td><b>“Write-through” label</b><br><span class="ids">E4a1-Q2</span></td><td>AWS defines write-through as updating the cache on every database write; “write, then invalidate” is cache invalidation.</td><td>The keyed answer stands; learn AWS's definitions.</td></tr>
+        <tr><td><b>ALB cross-zone</b><br><span class="ids">E1a1-Q32</span></td><td>The explanation says ALBs always keep cross-zone on. It is on at the load balancer but can be turned off per target group. <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html" target="_blank" rel="noopener">AWS docs</a></td><td>“Disabled by default for ALB” is still false.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= DRILL ================= -->
+<section id="drill">
+  <div class="sec-head">
+    <p class="eyebrow">Practice</p>
+    <h2>Flashcard drill</h2>
+    <p>30 cards, each built from a question you missed. Say the answer out loud, then flip.</p>
+  </div>
+  <div class="drill-bar">
+    <button class="btn" type="button" id="drill-show">Show all answers</button>
+    <button class="btn" type="button" id="drill-hide">Hide all answers</button>
+    <button class="btn" type="button" id="drill-shuffle">Shuffle</button>
+    <span class="progress" id="drill-count" aria-live="polite">0 of 30 flipped</span>
+  </div>
+  <div class="cards" id="cards">
+    <button class="flash" type="button" aria-expanded="false"><span class="q">20 eventually consistent reads/s of 4.5 KB items: how many RCUs?</span><span class="a">20 RCU. 4.5 → 8 KB = 2 units, halved for eventual = 1, × 20.</span><span class="hint">E2a1-Q47 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">200 eventually consistent reads/s of 12 KB items?</span><span class="a">300 RCU. 12 KB = 3 units × ½ × 200.</span><span class="hint">E3a1-Q39 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">A CPU-bound Lambda function is slow. Which single setting do you change?</span><span class="a">Memory. CPU scales with it; there is no CPU setting.</span><span class="hint">5 misses · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">40 invocations/s, 80 s each, default quotas. What must you do?</span><span class="a">Request a concurrency quota increase: 3,200 is over the 1,000 default.</span><span class="hint">E3a1-Q62 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Function B's spikes throttle function A. Fix?</span><span class="a">Reserved concurrency on B, which caps it.</span><span class="hint">E1a1-Q17 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">EB: keep full capacity and reuse the existing instances, cheapest?</span><span class="a">Rolling with additional batch.</span><span class="hint">E1a1-Q19 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">EB: full capacity and the smallest impact if the deployment fails?</span><span class="a">Immutable.</span><span class="hint">E1a1-Q59 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">CodeDeploy: provision a new environment, then re-route traffic?</span><span class="a">Blue/green. “Immutable” belongs to Elastic Beanstalk.</span><span class="hint">E2a1-Q57 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Gradual Lambda traffic shift, shortest total time?</span><span class="a">Canary10Percent5Minutes.</span><span class="hint">E2a1-Q20 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">PutObject to an SSE-KMS bucket returns AccessDenied. Missing permission?</span><span class="a">kms:GenerateDataKey.</span><span class="hint">3 misses · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Upload header value for SSE-S3? For SSE-KMS?</span><span class="a">AES256 · aws:kms</span><span class="hint">E1a1-Q13 · P4a1-Q55 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Encrypt a 750 KB payload with KMS: which API?</span><span class="a">GenerateDataKey (envelope encryption). Encrypt takes ≤ 4 KB.</span><span class="hint">E2a1-Q58 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">KMS ThrottlingException under heavy load: two fixes?</span><span class="a">Data key caching in the Encryption SDK + a quota increase (plus backoff).</span><span class="hint">E1a1-Q15 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Processing sometimes outlasts the visibility timeout. Which API?</span><span class="a">ChangeMessageVisibility.</span><span class="hint">E1a1-Q20 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Many empty receives and a rising SQS bill?</span><span class="a">Long polling: ReceiveMessageWaitTimeSeconds up to 20.</span><span class="hint">E1a1-Q60 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">One SNS topic, each partner must get only its own updates?</span><span class="a">Subscription filter policies.</span><span class="hint">3 misses · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Kinesis ProvisionedThroughputExceeded: two fixes?</span><span class="a">Retry with exponential backoff; add shards or send fewer/smaller requests. Never merge shards.</span><span class="hint">E1a1-Q34 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Guests and logged-in users both need S3 access from the app?</span><span class="a">Cognito identity pool with unauthenticated and authenticated roles.</span><span class="hint">E2a1-Q31 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Block risky sign-ins automatically?</span><span class="a">Cognito adaptive authentication (threat protection).</span><span class="hint">E2a1-Q11 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Move login off EC2 instances behind an ALB?</span><span class="a">ALB authenticate action with a Cognito user pool.</span><span class="hint">E2a1-Q18 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">App on ECS needs DynamoDB access without keys?</span><span class="a">An IAM task role referenced in the task definition.</span><span class="hint">E2a1-Q26 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">You narrowed the instance role but the app still writes to every bucket. Why?</span><span class="a">Keys in environment variables are found before the instance profile, which the SDK checks last.</span><span class="hint">E2a1-Q28 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Debugging missing X-Ray data: which does NOT help (role, daemon, CloudTrail, sampling)?</span><span class="a">Sampling.</span><span class="hint">3 misses · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Filter X-Ray traces by your own key-value pair?</span><span class="a">Annotations (indexed). Metadata isn't searchable.</span><span class="hint">E3a1-Q6 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">On cache misses only, route to the S3 bucket nearest the viewer's country?</span><span class="a">Lambda@Edge on the origin request event.</span><span class="hint">E2a1-Q51 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Read-heavy RDS, keep standard SQL, least refactoring?</span><span class="a">Read replicas.</span><span class="hint">3 misses · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Lambda + RDS “too many connections” during spikes?</span><span class="a">RDS Proxy.</span><span class="hint">E1a1-Q3 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">All targets unhealthy, but the site loads by IP: two causes?</span><span class="a">Instance SG doesn't allow the ALB's SG; health-check path or port is wrong.</span><span class="hint">3 misses · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">Custom NACL allows inbound 80, clients get no reply. Fix?</span><span class="a">Allow outbound ephemeral ports 1024–65535 on the NACL.</span><span class="hint">E1a1-Q55 · tap to flip</span></button>
+    <button class="flash" type="button" aria-expanded="false"><span class="q">“Encoded authorization failure message” in a CLI error?</span><span class="a">aws sts decode-authorization-message.</span><span class="hint">E1a3-Q18 · tap to flip</span></button>
+  </div>
+</section>
+
+<!-- ================= SOURCES ================= -->
+<section id="sources">
+  <div class="sec-head">
+    <p class="eyebrow">Reference</p>
+    <h2>Sources &amp; method</h2>
+  </div>
+  <ul class="sources">
+    <li><a href="https://docs.aws.amazon.com/aws-certification/latest/developer-associate-02/developer-associate-02.html" target="_blank" rel="noopener">DVA-C02 exam guide</a></li>
+    <li><a href="https://docs.aws.amazon.com/aws-certification/latest/developer-associate-02/dva-02-in-scope-services.html" target="_blank" rel="noopener">DVA-C02 in-scope services</a></li>
+    <li><a href="https://aws.amazon.com/blogs/training-and-certification/september-2026-new-offerings/" target="_blank" rel="noopener">AWS certification updates, Sep 2026 (DVA-C03 dates)</a></li>
+    <li><a href="https://docs.aws.amazon.com/aws-certification/latest/developer-associate-03/developer-associate-03.html" target="_blank" rel="noopener">DVA-C03 exam guide</a></li>
+    <li><a href="https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html" target="_blank" rel="noopener">Lambda quotas</a></li>
+    <li><a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/read-write-operations.html" target="_blank" rel="noopener">DynamoDB read and write operations</a></li>
+    <li><a href="https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_TransactWriteItems.html" target="_blank" rel="noopener">DynamoDB TransactWriteItems</a></li>
+    <li><a href="https://aws.amazon.com/about-aws/whats-new/2024/03/amazon-dynamodb-resource-based-policies/" target="_blank" rel="noopener">DynamoDB resource-based policies</a></li>
+    <li><a href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-queues.html" target="_blank" rel="noopener">SQS queue quotas</a></li>
+    <li><a href="https://aws.amazon.com/about-aws/whats-new/2025/08/amazon-sqs-max-payload-size-1mib/" target="_blank" rel="noopener">SQS 1 MiB payloads</a></li>
+    <li><a href="https://docs.aws.amazon.com/streams/latest/dev/service-sizes-and-limits.html" target="_blank" rel="noopener">Kinesis Data Streams quotas</a></li>
+    <li><a href="https://docs.aws.amazon.com/kms/latest/APIReference/API_Encrypt.html" target="_blank" rel="noopener">KMS Encrypt API</a></li>
+    <li><a href="https://docs.aws.amazon.com/kms/latest/developerguide/rotating-keys-enable.html" target="_blank" rel="noopener">KMS automatic key rotation</a></li>
+    <li><a href="https://aws.amazon.com/about-aws/whats-new/2023/01/amazon-s3-automatically-encrypts-new-objects/" target="_blank" rel="noopener">S3 default encryption (Jan 2023)</a></li>
+    <li><a href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html" target="_blank" rel="noopener">Elastic Beanstalk deployment policies</a></li>
+    <li><a href="https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-rollback-and-redeploy.html" target="_blank" rel="noopener">CodeDeploy rollbacks</a></li>
+    <li><a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html" target="_blank" rel="noopener">CloudFront Functions vs Lambda@Edge</a></li>
+    <li><a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html" target="_blank" rel="noopener">CloudFront signers</a></li>
+    <li><a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html" target="_blank" rel="noopener">How Elastic Load Balancing works (cross-zone)</a></li>
+    <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/custom-network-acl.html" target="_blank" rel="noopener">Network ACL ephemeral ports</a></li>
+    <li><a href="https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/credentials-chain.html" target="_blank" rel="noopener">SDK for Java credentials chain</a></li>
+    <li><a href="https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-python-segment.html" target="_blank" rel="noopener">X-Ray annotations and metadata</a></li>
+    <li><a href="https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-threat-protection.html" target="_blank" rel="noopener">Cognito threat protection</a></li>
+    <li><a href="https://docs.aws.amazon.com/database-encryption-sdk/latest/devguide/DDBEC-rename.html" target="_blank" rel="noopener">AWS Database Encryption SDK rename</a></li>
+    <li><a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html" target="_blank" rel="noopener">RDS cross-Region automated backups</a></li>
+    <li><a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html" target="_blank" rel="noopener">RDS IAM database authentication</a></li>
+    <li><a href="https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html" target="_blank" rel="noopener">ElastiCache engine comparison</a></li>
+    <li><a href="https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-resources-and-properties.html" target="_blank" rel="noopener">SAM resource types</a></li>
+    <li><a href="https://aws.amazon.com/blogs/devops/aws-codecommit-returns-to-general-availability/" target="_blank" rel="noopener">CodeCommit returns to GA</a></li>
+    <li><a href="https://aws.amazon.com/blogs/aws/aws-free-tier-update-new-customers-can-get-started-and-explore-aws-with-up-to-200-in-credits/" target="_blank" rel="noopener">Free Tier update (Jul 2025)</a></li>
+    <li><a href="https://tutorialsdojo.com/how-to-invalidate-api-gateway-cache/" target="_blank" rel="noopener">Invalidating the API Gateway cache</a></li>
+  </ul>
+  <details class="method" style="margin-top:18px">
+    <summary>How this report was built</summary>
+    <div class="stack small">
+      <p>Inputs: eight CSV exports (Exam 01–04, Practice Test 1–4) covering 12 attempts and 329 questions: 310 answered wrong and 19 answered right but flagged unsure. Each export lists only those questions, so a question absent from an attempt's export was answered correctly there.</p>
+      <p>Every question was read and tagged by hand to one of 29 topics, grouped into the 14 topic sections above. Repeats were matched by identical answer-option sets within the same test and confirmed by reading both versions. The Keyword Tip column (Exams 01–04) was condensed into the trigger lines, with corrections where a tip had aged.</p>
+      <p>Facts, limits and dates were checked against the AWS pages listed above on 1 November 2026. Domain tags in the score panel come from the practice banks themselves.</p>
+    </div>
+  </details>
+  <p class="foot" style="margin-top:16px">Prepared 1 November 2026 for DVA-C02. Not affiliated with AWS.</p>
+</section>
+
+</main>
+</div>
+</div>
+
+<div class="tooltip" id="tip" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- days left until the DVA-C02 cut-off ---------- */
+  try {
+    var el = document.getElementById("days-left");
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var days = Math.round((new Date(2026, 10, 30) - today) / 86400000);
+    if (el) {
+      if (days > 1) el.textContent = days + " days left";
+      else if (days === 1) el.textContent = "1 day left";
+      else if (days === 0) el.textContent = "Today is the last day";
+      else el.textContent = "DVA-C02 has retired; DVA-C03 applies";
+    }
+  } catch (e) {}
+
+  /* ---------- tooltip for the score chart ---------- */
+  var tip = document.getElementById("tip");
+  function showTip(target) {
+    var parts = (target.getAttribute("data-tip") || "").split("|");
+    tip.textContent = "";
+    var strong = document.createElement("strong");
+    strong.textContent = parts[1] || "";
+    var span = document.createElement("span");
+    span.textContent = parts[0] || "";
+    tip.appendChild(strong);
+    tip.appendChild(span);
+    tip.hidden = false;
+    var r = target.getBoundingClientRect();
+    var tw = tip.offsetWidth, th = tip.offsetHeight;
+    var x = Math.min(Math.max(8, r.left + r.width / 2 - tw / 2), window.innerWidth - tw - 8);
+    var y = r.top - th - 8;
+    if (y < 8) y = r.bottom + 8;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  }
+  function hideTip() { tip.hidden = true; }
+  document.querySelectorAll(".db-dot").forEach(function (d) {
+    d.addEventListener("pointerenter", function () { showTip(d); });
+    d.addEventListener("pointerleave", hideTip);
+    d.addEventListener("focus", function () { showTip(d); });
+    d.addEventListener("blur", hideTip);
+  });
+  window.addEventListener("scroll", hideTip, { passive: true });
+
+  /* ---------- fix-first review ticks (this browser only) ---------- */
+  var KEY = "dva-c02-reviewed-v1";
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
+  var rows = document.querySelectorAll("#ff-list li");
+  var prog = document.getElementById("ff-progress");
+  function updateProgress() {
+    var n = 0;
+    rows.forEach(function (li) {
+      var cb = li.querySelector("input");
+      li.classList.toggle("done", cb.checked);
+      if (cb.checked) n++;
+    });
+    prog.textContent = n + " of " + rows.length + " topics reviewed";
+  }
+  rows.forEach(function (li) {
+    var cb = li.querySelector("input");
+    var k = li.getAttribute("data-key");
+    cb.checked = !!saved[k];
+    cb.addEventListener("change", function () {
+      saved[k] = cb.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  /* ---------- RCU / WCU calculator ---------- */
+  var cSize = document.getElementById("c-size"), cReads = document.getElementById("c-reads"),
+      cRtype = document.getElementById("c-rtype"), cWrites = document.getElementById("c-writes"),
+      cWtype = document.getElementById("c-wtype");
+  var outR = document.getElementById("c-rcu"), outRh = document.getElementById("c-rhow"),
+      outW = document.getElementById("c-wcu"), outWh = document.getElementById("c-whow");
+  var RF = { strong: [1, "×1 (strong)"], eventual: [0.5, "× ½ (eventual)"], transactional: [2, "×2 (transactional)"] };
+  var WF = { standard: [1, "×1 (standard)"], transactional: [2, "×2 (transactional)"] };
+  function fmt(n) { return (Math.round(n * 100) / 100).toLocaleString("en-US"); }
+  function calc() {
+    var size = parseFloat(cSize.value), reads = parseFloat(cReads.value) || 0, writes = parseFloat(cWrites.value) || 0;
+    if (!(size > 0)) { outR.textContent = "–"; outW.textContent = "–"; outRh.textContent = "Enter an item size above 0 KB."; outWh.textContent = ""; return; }
+    var rBlocks = Math.ceil(size / 4 - 1e-9), rf = RF[cRtype.value];
+    var perRead = rBlocks * rf[0], rcu = perRead * reads;
+    outR.textContent = fmt(Math.ceil(rcu - 1e-9)) + " RCU";
+    outRh.textContent = fmt(size) + " KB → " + (rBlocks * 4) + " KB = " + rBlocks + " unit" + (rBlocks > 1 ? "s" : "") + " " + rf[1] + " = " + fmt(perRead) + " per read × " + fmt(reads) + "/s" + (rcu % 1 ? " = " + fmt(rcu) + ", round up" : "");
+    var wBlocks = Math.ceil(size - 1e-9), wf = WF[cWtype.value];
+    var wcu = wBlocks * wf[0] * writes;
+    outW.textContent = fmt(wcu) + " WCU";
+    outWh.textContent = fmt(size) + " KB → " + wBlocks + " KB = " + wBlocks + " unit" + (wBlocks > 1 ? "s" : "") + " " + wf[1] + " × " + fmt(writes) + "/s";
+  }
+  [cSize, cReads, cRtype, cWrites, cWtype].forEach(function (el) {
+    el.addEventListener("input", calc);
+    el.addEventListener("change", calc);
+  });
+  document.querySelectorAll("[data-preset]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var p = b.getAttribute("data-preset").split(",");
+      cSize.value = p[0]; cReads.value = p[1]; cRtype.value = p[2]; cWrites.value = p[3]; cWtype.value = p[4];
+      calc();
+    });
+  });
+  calc();
+
+  /* ---------- flashcards ---------- */
+  var cardsWrap = document.getElementById("cards");
+  var countEl = document.getElementById("drill-count");
+  function cards() { return cardsWrap.querySelectorAll(".flash"); }
+  function updateCount() {
+    var all = cards(), n = 0;
+    all.forEach(function (c) { if (c.getAttribute("aria-expanded") === "true") n++; });
+    countEl.textContent = n + " of " + all.length + " flipped";
+  }
+  cards().forEach(function (c) {
+    c.addEventListener("click", function () {
+      c.setAttribute("aria-expanded", c.getAttribute("aria-expanded") === "true" ? "false" : "true");
+      updateCount();
+    });
+  });
+  document.getElementById("drill-show").addEventListener("click", function () {
+    cards().forEach(function (c) { c.setAttribute("aria-expanded", "true"); }); updateCount();
+  });
+  document.getElementById("drill-hide").addEventListener("click", function () {
+    cards().forEach(function (c) { c.setAttribute("aria-expanded", "false"); }); updateCount();
+  });
+  document.getElementById("drill-shuffle").addEventListener("click", function () {
+    var arr = Array.prototype.slice.call(cards());
+    for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+    arr.forEach(function (c) { c.setAttribute("aria-expanded", "false"); cardsWrap.appendChild(c); });
+    updateCount();
+  });
+  updateCount();
+
+  /* ---------- highlight the current section in the contents ---------- */
+  try {
+    var links = {};
+    document.querySelectorAll("nav.toc a[href^='#']").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+    var current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting && links[en.target.id]) {
+          if (current) current.removeAttribute("aria-current");
+          current = links[en.target.id];
+          current.setAttribute("aria-current", "true");
+        }
+      });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    document.querySelectorAll("main section[id]").forEach(function (s) { obs.observe(s); });
+  } catch (e) {}
+})();
+</script>
